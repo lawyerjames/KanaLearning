@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小日文 - 五十音快樂學</title>
+    <!-- 引入可愛的圓體字型 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 頂部資訊列：計時與得分 (選單頁面隱藏) -->
+    <header id="game-header" class="hidden">
+        <button id="btn-home" class="btn btn-icon" title="回主選單">🏠</button>
+        <div class="stats-container">
+            <div class="stat-box timer-box">
+                <span class="icon">⏱️</span>
+                <span id="display-time">00:00</span>
+            </div>
+            <div class="stat-box score-box">
+                <span class="icon">⭐</span>
+                <span id="display-score">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-container">
+        <!-- 主選單畫面 -->
+        <section id="screen-home" class="screen active">
+            <h1 class="app-title">小日文<br><span class="subtitle">五十音快樂學</span></h1>
+            
+            <div class="menu-container">
+                <button class="btn btn-menu" data-target="screen-match-sound">
+                    <span class="emoji">🎧</span> 讀音配對大考驗
+                </button>
+                <button class="btn btn-menu" data-target="screen-match-kana">
+                    <span class="emoji">🔠</span> 平片假名連連看
+                </button>
+                <button class="btn btn-menu" data-target="screen-fill-blanks">
+                    <span class="emoji">🧩</span> 五十音填空尋寶
+                </button>
+                <button class="btn btn-menu btn-secondary" data-target="screen-leaderboard">
+                    <span class="emoji">🏆</span> 榮譽排行榜
+                </button>
+            </div>
+        </section>
+
+        <!-- 功能一：讀音配對畫面 -->
+        <section id="screen-match-sound" class="screen hidden">
+            <h2 class="section-title">讀音配對</h2>
+            <div class="game-area" id="game-area-sound">
+                <!-- 遊戲內容由 JS 動態生成 -->
+            </div>
+        </section>
+
+        <!-- 功能二：平片假名配對畫面 -->
+        <section id="screen-match-kana" class="screen hidden">
+            <h2 class="section-title">平片假名配對</h2>
+            <div class="game-area" id="game-area-kana">
+                <!-- 遊戲內容由 JS 動態生成 -->
+            </div>
+        </section>
+
+        <!-- 功能三：五十音填空畫面 -->
+        <section id="screen-fill-blanks" class="screen hidden">
+            <h2 class="section-title">五十音填空</h2>
+            <div class="difficulty-selector" id="difficulty-selector">
+                <p>請選擇難度：</p>
+                <button class="btn btn-diff" data-level="easy">⭐ 簡單 (隱藏部分)</button>
+                <button class="btn btn-diff" data-level="medium">⭐⭐ 中等 (隱藏一半)</button>
+                <button class="btn btn-diff" data-level="hard">⭐⭐⭐ 挑戰 (完全空白)</button>
+            </div>
+            <div class="game-area hidden" id="game-area-blanks">
+                <div class="gojuon-grid" id="gojuon-grid">
+                    <!-- 表格由 JS 生成 -->
+                </div>
+                <!-- 填空選項區 -->
+                <div class="options-container hidden" id="options-container">
+                    <!-- 選項按鈕由 JS 生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 排行榜畫面 -->
+        <section id="screen-leaderboard" class="screen hidden">
+            <h2 class="section-title">榮譽排行榜</h2>
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active" data-board="sound">讀音配對</button>
+                <button class="tab-btn" data-board="kana">平片配對</button>
+                <button class="tab-btn" data-board="blanks">填空挑戰</button>
+            </div>
+            <ul class="leaderboard-list" id="leaderboard-list">
+                <!-- 排名由 JS 生成 -->
+            </ul>
+            <button class="btn btn-secondary mt-4" id="btn-back-home-lb">回主選單</button>
+        </section>
+    </main>
+
+    <!-- 成功/單字展示彈窗 -->
+    <div id="modal-overlay" class="hidden">
+        <div id="word-card" class="word-card">
+            <div class="card-image-container">
+                <span class="card-emoji" id="word-emoji">🍎</span>
+            </div>
+            <div class="card-info">
+                <div class="kana-large" id="word-kana">りんご</div>
+                <div class="romaji" id="word-romaji">ringo</div>
+                <div class="meaning" id="word-meaning">蘋果</div>
+            </div>
+            <button class="btn btn-primary mt-3" id="btn-next-word">繼續</button>
+        </div>
+    </div>
+
+    <!-- 結算彈窗 -->
+    <div id="result-modal" class="hidden">
+        <div class="result-card">
+            <h2>🎉 挑戰完成！ 🎉</h2>
+            <div class="final-score">
+                <span class="label">總分：</span>
+                <span class="value" id="final-score-value">0</span>
+            </div>
+            <div class="final-time">
+                <span class="label">時間：</span>
+                <span class="value" id="final-time-value">00:00</span>
+            </div>
+            <div class="name-input-area mt-4">
+                <label for="player-name">請輸入你的名字：</label>
+                <input type="text" id="player-name" placeholder="小天才" maxlength="10">
+                <button class="btn btn-primary" id="btn-save-score">儲存成績</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
