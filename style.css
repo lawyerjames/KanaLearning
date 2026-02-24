@@ -295,6 +295,179 @@ header {
   border: 2px solid var(--accent-color);
 }
 
+/* === 排球對戰專屬樣式 === */
+.volleyball-court {
+  width: 100%;
+  max-width: 500px;
+  height: 60vh;
+  min-height: 400px;
+  background-color: #E2AD75;
+  /* 木質地板色 */
+  border: 4px solid white;
+  border-radius: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  margin-bottom: 1rem;
+}
+
+.court-half {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.opponent-half {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, transparent 100%);
+  border-bottom: 2px solid white;
+}
+
+.player-half {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, transparent 100%);
+  border-top: 2px solid white;
+}
+
+.net-area {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 網子視覺效果 (純裝飾) */
+.net-area::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -2%;
+  width: 104%;
+  height: 10px;
+  background-color: white;
+  transform: translateY(-50%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: -1;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0, 0, 0, 0.1) 5px, rgba(0, 0, 0, 0.1) 10px);
+}
+
+.volley-question {
+  background-color: white;
+  color: var(--primary-color);
+  font-size: 3rem;
+  font-weight: 900;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border: 4px solid var(--accent-color);
+  animation: float 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.volley-message {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #FF5722;
+  text-shadow: 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white;
+  position: absolute;
+  bottom: -30px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.volley-message.show {
+  opacity: 1;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.scoreboard {
+  background-color: rgba(30, 30, 30, 0.8);
+  color: white;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  min-width: 120px;
+  position: absolute;
+}
+
+.opponent-board {
+  top: 10px;
+  right: 10px;
+}
+
+.player-board {
+  bottom: 10px;
+  left: 10px;
+}
+
+.team-name {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 0.2rem;
+  font-weight: 700;
+}
+
+.score-number {
+  font-size: 2.5rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 900;
+  line-height: 1;
+  color: #FFD700;
+}
+
+.timer-bar-container {
+  position: absolute;
+  top: -20px;
+  width: 80%;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  width: 100%;
+  background-color: var(--success-color);
+  transition: width 0.1s linear, background-color 0.3s;
+}
+
+.timer-bar.warning {
+  background-color: #FFC107;
+}
+
+.timer-bar.danger {
+  background-color: var(--error-color);
+}
+
 /* 彈窗樣式 */
 #modal-overlay,
 #result-modal {

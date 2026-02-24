@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,12 @@
     <!-- 引入可愛的圓體字型 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&family=Nunito:wght@400;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!-- 頂部資訊列：計時與得分 (選單頁面隱藏) -->
     <header id="game-header" class="hidden">
@@ -30,7 +34,7 @@
         <!-- 主選單畫面 -->
         <section id="screen-home" class="screen active">
             <h1 class="app-title">小日文<br><span class="subtitle">五十音快樂學</span></h1>
-            
+
             <div class="menu-container">
                 <button class="btn btn-menu" data-target="screen-match-sound">
                     <span class="emoji">🎧</span> 讀音配對大考驗
@@ -47,11 +51,52 @@
             </div>
         </section>
 
-        <!-- 功能一：讀音配對畫面 -->
+        <!-- 功能一：讀音對戰畫面 -->
         <section id="screen-match-sound" class="screen hidden">
-            <h2 class="section-title">讀音配對</h2>
-            <div class="game-area" id="game-area-sound">
-                <!-- 遊戲內容由 JS 動態生成 -->
+            <h2 class="section-title">讀音對決</h2>
+
+            <!-- 難度選擇區 -->
+            <div class="difficulty-selector" id="sound-difficulty-selector">
+                <p>請選擇比賽：</p>
+                <button class="btn btn-diff sound-diff-btn" data-level="1">⭐ 預賽 (扇南) - 5秒</button>
+                <button class="btn btn-diff sound-diff-btn" data-level="2">⭐⭐ 複賽 (和久谷南) - 4秒</button>
+                <button class="btn btn-diff sound-diff-btn" data-level="3">⭐⭐⭐ 準決賽 (青葉城西) - 3秒</button>
+                <button class="btn btn-diff sound-diff-btn" data-level="4">⭐⭐⭐⭐ 決賽 (白鳥澤) - 2秒</button>
+            </div>
+
+            <!-- 遊戲區 -->
+            <div class="game-area hidden" id="game-area-sound">
+                <div class="volleyball-court">
+                    <!-- 電腦區 (上) -->
+                    <div class="court-half opponent-half">
+                        <div class="scoreboard opponent-board">
+                            <div class="team-name" id="opponent-name">對手</div>
+                            <div class="score-number" id="opponent-score-val">0</div>
+                        </div>
+                    </div>
+
+                    <!-- 球網 / 題目區 (中) -->
+                    <div class="net-area">
+                        <div class="timer-bar-container">
+                            <div class="timer-bar" id="volley-timer"></div>
+                        </div>
+                        <div class="volley-question" id="volley-question">?</div>
+                        <div class="volley-message" id="volley-message">READY</div>
+                    </div>
+
+                    <!-- 玩家區 (下) -->
+                    <div class="court-half player-half">
+                        <div class="scoreboard player-board">
+                            <div class="team-name">烏野高校</div>
+                            <div class="score-number" id="player-score-val">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 選項區 -->
+                <div class="options-container" id="sound-options-container">
+                    <!-- 選項由 JS 生成 -->
+                </div>
             </div>
         </section>
 
@@ -136,4 +181,5 @@
     <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>

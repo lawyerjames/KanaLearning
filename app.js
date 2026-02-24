@@ -23,6 +23,16 @@ const ui = {
 
     // 遊戲區域
     areaSound: document.getElementById('game-area-sound'),
+    soundDiffSelector: document.getElementById('sound-difficulty-selector'),
+    soundDiffBtns: document.querySelectorAll('.sound-diff-btn'),
+    opponentName: document.getElementById('opponent-name'),
+    opponentScoreVal: document.getElementById('opponent-score-val'),
+    playerScoreVal: document.getElementById('player-score-val'),
+    volleyQuestion: document.getElementById('volley-question'),
+    volleyMessage: document.getElementById('volley-message'),
+    volleyTimerBar: document.getElementById('volley-timer'),
+    soundOptionsContainer: document.getElementById('sound-options-container'),
+
     areaKana: document.getElementById('game-area-kana'),
     areaBlanks: document.getElementById('game-area-blanks'),
     gojuonGrid: document.getElementById('gojuon-grid'),
@@ -61,9 +71,9 @@ function init() {
                 renderLeaderboard('sound'); // 預設顯示讀音配對
             } else {
                 const mode = target.replace('screen-', '');
-                if (mode === 'fill-blanks') {
+                if (mode === 'fill-blanks' || mode === 'match-sound') {
                     showScreen(mode);
-                    // 填空題需要先選難度，不直接開始遊戲
+                    // 設定題與對戰題需要先選難度，不直接開始遊戲
                 } else {
                     startGame(mode);
                 }
@@ -71,11 +81,15 @@ function init() {
         });
     });
 
-    // 綁定難度選擇按鈕 (功能三)
+    // 綁定難度選擇按鈕 (功能一 & 功能三)
     ui.diffBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const level = btn.dataset.level;
-            startGame('fill-blanks', level);
+            if (btn.classList.contains('sound-diff-btn')) {
+                startGame('match-sound', level);
+            } else {
+                startGame('fill-blanks', level);
+            }
         });
     });
 
@@ -132,6 +146,12 @@ function showScreen(screenName) {
             ui.areaBlanks.classList.add('hidden');
             ui.displayTime.textContent = "00:00";
             ui.displayScore.textContent = "0";
+        } else if (screenName === 'match-sound') {
+            // 進入對戰模式時，顯示難度選擇
+            ui.soundDiffSelector.classList.remove('hidden');
+            ui.areaSound.classList.add('hidden');
+            ui.displayTime.textContent = "00:00";
+            ui.displayScore.textContent = "0";
         }
     }
 }
@@ -155,7 +175,9 @@ function startGame(mode, difficulty = null) {
         ui.areaBlanks.classList.remove('hidden');
         startFillBlanksGame(difficulty);
     } else if (mode === 'match-sound') {
-        startSoundMatchGame();
+        ui.soundDiffSelector.classList.add('hidden');
+        ui.areaSound.classList.remove('hidden');
+        startVolleyballMatch(difficulty);
     } else if (mode === 'match-kana') {
         startKanaMatchGame();
     }
@@ -234,115 +256,225 @@ function showWordModal(kanaObj) {
     playAudio(kanaObj.word); // 顯示彈窗時自動播放單字發音
 }
 
-// --- 遊戲邏輯：功能一 (讀音配對) ---
-let matchedPairsSound = 0;
-let soundGameKanaList = [];
-let firstCardSound = null;
-let isAnimatingSound = false;
+// --- 遊戲邏輯：功能一 (讀音對戰 - 排球模式) ---
+const volleyData = {
+    timer: null,
+    timeLeft: 0,
+    maxTime: 0,
+    opponentScore: 0,
+    playerScore: 0,
+    targetKana: null,
+    isAnimating: false,
+    deuceMode: false
+};
 
-function startSoundMatchGame() {
-    ui.areaSound.innerHTML = '';
-    matchedPairsSound = 0;
-    firstCardSound = null;
-    isAnimatingSound = false;
+const opponentConfig = {
+    '1': { name: '扇南高校', time: 5 },
+    '2': { name: '和久谷南', time: 4 },
+    '3': { name: '青葉城西', time: 3 },
+    '4': { name: '白鳥澤', time: 2 }
+};
 
-    // 隨機抽選 6 個不同的假名 (共 12 張卡片)
-    const shuffledData = [...cleanedKanaData].sort(() => 0.5 - Math.random());
-    const selectedKana = shuffledData.slice(0, 6);
+function startVolleyballMatch(difficultyLevel) {
+    const config = opponentConfig[difficultyLevel] || opponentConfig['1'];
+    volleyData.maxTime = config.time * 1000;
+    volleyData.opponentScore = 0;
+    volleyData.playerScore = 0;
+    volleyData.deuceMode = false;
+    volleyData.isAnimating = false;
 
-    // 產生配對陣列：一張顯示假名，一張顯示發音按鈕 (或羅馬音)
-    const cards = [];
-    selectedKana.forEach(k => {
-        cards.push({ id: k.hiragana, type: 'kana', display: k.hiragana, obj: k });
-        // 為了讓卡片有明顯區別，發音卡顯示喇叭圖示與羅馬音提示
-        cards.push({ id: k.hiragana, type: 'sound', display: `🔊 ${k.romaji}`, obj: k });
-    });
+    ui.opponentName.textContent = config.name;
+    updateVolleyballScoreboards();
 
-    // 打亂卡片順序
-    cards.sort(() => 0.5 - Math.random());
+    showVolleyMessage('READY', 'warning');
+    ui.volleyQuestion.textContent = '🏐';
+    ui.soundOptionsContainer.innerHTML = '';
+    ui.volleyTimerBar.style.width = '100%';
 
-    // 建立棋盤 (CSS grid)
-    const grid = document.createElement('div');
-    grid.className = 'gojuon-grid'; // 重用 grid 樣式
-    // 強制設定為 4 欄 (4x3 = 12張)
-    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-
-    cards.forEach((card, index) => {
-        const btn = document.createElement('div');
-        btn.className = 'kana-card';
-        // HTML 屬性無法存物件，所以存在 dataset 方便比對
-        btn.dataset.index = index;
-        btn.dataset.id = card.id;
-        btn.dataset.type = card.type;
-        btn.innerHTML = card.display;
-
-        // 點擊事件
-        btn.addEventListener('click', () => handleSoundCardClick(btn, card));
-        grid.appendChild(btn);
-    });
-
-    soundGameKanaList = cards;
-    ui.areaSound.appendChild(grid);
+    // 延遲開始第一球
+    setTimeout(() => {
+        ui.volleyMessage.classList.remove('show');
+        nextVolley();
+    }, 1500);
 }
 
-function handleSoundCardClick(cardElement, cardData) {
-    if (isAnimatingSound || cardElement.classList.contains('matched') || cardElement.classList.contains('selected')) {
+function updateVolleyballScoreboards() {
+    ui.opponentScoreVal.textContent = volleyData.opponentScore;
+    ui.playerScoreVal.textContent = volleyData.playerScore;
+}
+
+function nextVolley() {
+    if (volleyData.isAnimating) return;
+
+    clearInterval(volleyData.timer);
+    ui.volleyTimerBar.style.width = '100%';
+    ui.volleyTimerBar.className = 'timer-bar safe';
+
+    // 隨機抽選題目 (從清理過的資料集中)
+    const randomKana = cleanedKanaData[Math.floor(Math.random() * cleanedKanaData.length)];
+    volleyData.targetKana = randomKana;
+
+    ui.volleyQuestion.textContent = randomKana.hiragana;
+    playAudio(randomKana.hiragana); // 唸出題目發音
+
+    generateVolleyOptions(randomKana);
+
+    // 開始計時
+    volleyData.timeLeft = volleyData.maxTime;
+    volleyData.timer = setInterval(updateVolleyTimer, 50);
+}
+
+function generateVolleyOptions(targetData) {
+    ui.soundOptionsContainer.innerHTML = '';
+
+    const options = [targetData];
+    let pool = [...cleanedKanaData].filter(k => k.hiragana !== targetData.hiragana);
+    pool.sort(() => 0.5 - Math.random());
+    options.push(...pool.slice(0, 3));
+    options.sort(() => 0.5 - Math.random());
+
+    options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt.romaji; // 選項顯示羅馬音
+
+        btn.addEventListener('click', () => checkVolleyAnswer(opt.hiragana, btn));
+        ui.soundOptionsContainer.appendChild(btn);
+    });
+}
+
+function updateVolleyTimer() {
+    volleyData.timeLeft -= 50;
+    if (volleyData.timeLeft < 0) volleyData.timeLeft = 0;
+    const percentage = (volleyData.timeLeft / volleyData.maxTime) * 100;
+
+    ui.volleyTimerBar.style.width = percentage + '%';
+
+    if (percentage <= 0) {
+        clearInterval(volleyData.timer);
+        onVolleyTimeout();
         return;
     }
 
-    // 如果點到聲音卡，直接播放發音
-    if (cardData.type === 'sound') {
-        playAudio(cardData.id);
-    }
-
-    cardElement.classList.add('selected');
-
-    if (!firstCardSound) {
-        // 翻第一張卡
-        firstCardSound = { el: cardElement, data: cardData };
+    if (percentage < 30) {
+        ui.volleyTimerBar.className = 'timer-bar danger';
+    } else if (percentage < 60) {
+        ui.volleyTimerBar.className = 'timer-bar warning';
     } else {
-        // 翻第二張卡，進行比對
-        const secondCard = { el: cardElement, data: cardData };
-        isAnimatingSound = true;
-
-        if (firstCardSound.data.id === secondCard.data.id && firstCardSound.data.type !== secondCard.data.type) {
-            // 配對成功！(確認是同一個字，且一邊是 kana, 一邊是 sound)
-            addScore(100);
-
-            setTimeout(() => {
-                firstCardSound.el.classList.remove('selected');
-                secondCard.el.classList.remove('selected');
-                firstCardSound.el.classList.add('matched');
-                secondCard.el.classList.add('matched');
-
-                // 顯示單字獎勵彈窗
-                showWordModal(cardData.obj);
-
-                matchedPairsSound++;
-
-                // 確認是否完成
-                if (matchedPairsSound === 6) { // 6對卡片
-                    setTimeout(endGame, 1000);
-                }
-
-                resetTurnSound();
-            }, 600);
-        } else {
-            // 配對失敗
-            setTimeout(() => {
-                firstCardSound.el.classList.remove('selected');
-                secondCard.el.classList.remove('selected');
-                // 扣一點分數以資懲罰？(暫不扣分確保小孩不挫折，或扣10分)
-                if (gameState.score > 0) addScore(-10);
-                resetTurnSound();
-            }, 1000); // 給玩家 1 秒看錯了哪裡
-        }
+        ui.volleyTimerBar.className = 'timer-bar safe';
     }
 }
 
-function resetTurnSound() {
-    firstCardSound = null;
-    isAnimatingSound = false;
+function onVolleyTimeout() {
+    volleyData.isAnimating = true;
+
+    // 找出正確解答按鈕並標示
+    const btns = ui.soundOptionsContainer.querySelectorAll('.option-btn');
+    btns.forEach(b => {
+        b.disabled = true;
+        if (b.textContent === volleyData.targetKana.romaji) {
+            b.style.backgroundColor = 'var(--success-color)';
+        }
+    });
+
+    showVolleyMessage('Time Out!', 'error');
+    volleyData.opponentScore++;
+    updateVolleyballScoreboards();
+
+    setTimeout(checkMatchWinner, 1500);
+}
+
+function checkVolleyAnswer(selectedHiragana, btnElement) {
+    if (volleyData.isAnimating) return;
+    volleyData.isAnimating = true;
+    clearInterval(volleyData.timer); // 停止計時
+
+    const isCorrect = (selectedHiragana === volleyData.targetKana.hiragana);
+    const btns = ui.soundOptionsContainer.querySelectorAll('.option-btn');
+    btns.forEach(b => b.disabled = true);
+
+    if (isCorrect) {
+        btnElement.style.backgroundColor = 'var(--success-color)';
+        showVolleyMessage('Nice Receive!', 'success');
+        addScore(50); // 遊戲總分 (排行榜用)
+        volleyData.playerScore++;
+    } else {
+        btnElement.style.backgroundColor = 'var(--error-color)';
+        // 標示正確答案
+        btns.forEach(b => {
+            if (b.textContent === volleyData.targetKana.romaji) {
+                b.style.backgroundColor = 'var(--success-color)';
+            }
+        });
+        showVolleyMessage('Miss!', 'error');
+        volleyData.opponentScore++;
+    }
+
+    updateVolleyballScoreboards();
+    setTimeout(checkMatchWinner, 1500);
+}
+
+function showVolleyMessage(msg, type) {
+    ui.volleyMessage.textContent = msg;
+    ui.volleyMessage.style.color = type === 'success' ? '#4CAF50' : '#FF5722';
+    if (type === 'warning') ui.volleyMessage.style.color = '#FFC107';
+
+    ui.volleyMessage.classList.remove('show');
+    void ui.volleyMessage.offsetWidth; // trigger reflow
+    ui.volleyMessage.classList.add('show');
+}
+
+function checkMatchWinner() {
+    const pScore = volleyData.playerScore;
+    const oScore = volleyData.opponentScore;
+
+    // 檢查 Deuce (24:24 以上)
+    if (pScore >= 24 && oScore >= 24) {
+        if (!volleyData.deuceMode) {
+            volleyData.deuceMode = true;
+            showVolleyMessage('Deuce!', 'warning');
+            setTimeout(() => {
+                ui.volleyMessage.classList.remove('show');
+                volleyData.isAnimating = false;
+                nextVolley();
+            }, 1500);
+            return;
+        }
+
+        if (Math.abs(pScore - oScore) >= 2) {
+            endVolleyballMatch(pScore > oScore ? 'player' : 'opponent');
+            return;
+        }
+    } else {
+        // 正常 25 分獲勝
+        if (pScore >= 25) {
+            endVolleyballMatch('player');
+            return;
+        } else if (oScore >= 25) {
+            endVolleyballMatch('opponent');
+            return;
+        }
+    }
+
+    // 尚未有人獲勝，下一球
+    volleyData.isAnimating = false;
+    ui.volleyMessage.classList.remove('show');
+    nextVolley();
+}
+
+function endVolleyballMatch(winner) {
+    ui.soundOptionsContainer.innerHTML = '';
+    ui.volleyQuestion.textContent = '🏆';
+    clearInterval(volleyData.timer);
+
+    if (winner === 'player') {
+        showVolleyMessage('烏野高校 勝利！', 'success');
+        addScore(1000); // 獲勝額外獎金分數
+    } else {
+        showVolleyMessage('比賽結束...', 'error');
+    }
+
+    setTimeout(endGame, 3000);
 }
 
 // --- 遊戲邏輯：功能二 (平片假名配對) ---
