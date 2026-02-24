@@ -397,11 +397,11 @@ header {
   font-weight: 700;
   color: white;
   background-color: rgba(0, 0, 0, 0.6);
-  padding: 2px 10px;
+  padding: 4px 12px;
   border-radius: 10px;
   position: absolute;
-  top: -30px;
-  /* 往上移動避免擋住上方元素 */
+  top: -45px;
+  /* 再往上移動一點 */
   white-space: nowrap;
   pointer-events: none;
   z-index: 15;
@@ -427,7 +427,8 @@ header {
   color: #FF5722;
   text-shadow: 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white;
   position: absolute;
-  bottom: -30px;
+  bottom: -45px;
+  /* 往下移動以避免擋住題目球 */
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s;
