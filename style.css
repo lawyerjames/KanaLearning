@@ -172,7 +172,7 @@ header {
 }
 
 .app-title {
-  font-size: 4rem;
+  font-size: 3.5rem;
   color: var(--primary-color);
   margin-bottom: 2rem;
   text-shadow: 2px 2px 0px var(--accent-color);
@@ -180,9 +180,25 @@ header {
 }
 
 .subtitle {
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   color: var(--text-dark);
   font-weight: 700;
+}
+
+.cover-image-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 1rem;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cover-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
 }
 
 .section-title {
