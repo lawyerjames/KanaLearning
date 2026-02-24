@@ -527,7 +527,7 @@ function onVolleyTimeout() {
 }
 
 function checkVolleyAnswer(selectedHiragana, btnElement) {
-    if (volleyData.isAnimating) return;
+    if (volleyData.isAnimating || volleyData.isPaused) return;
     volleyData.isAnimating = true;
     clearInterval(volleyData.timer); // 停止計時
 
@@ -929,7 +929,7 @@ function generateKanaOptions(targetArray, answerType) {
 }
 
 function checkKanaAnswer(selectedText, btnElement) {
-    if (kanaMatchState.isAnimating) return;
+    if (kanaMatchState.isAnimating || kanaMatchState.isPaused) return;
 
     const currentIndex = kanaMatchState.currentIndex;
     const correctTarget = kanaMatchState.targetKanaArray[currentIndex];

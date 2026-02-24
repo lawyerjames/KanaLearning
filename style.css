@@ -494,12 +494,9 @@ header {
   width: 100%;
   padding: 10px 15px;
   background-color: rgba(0, 0, 0, 0.5);
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
   gap: 15px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
   box-sizing: border-box;
 }
 
