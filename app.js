@@ -424,8 +424,21 @@ function nextVolley() {
     generateVolleyOptions(randomKana);
 
     // 開始計時
-    volleyData.timeLeft = volleyData.maxTime;
     volleyData.timer = setInterval(updateVolleyTimer, 50);
+
+    // 顯示漢字/中文提示
+    const hintElement = document.getElementById('volley-hint');
+    if (hintElement) {
+        if (randomKana.meaning && randomKana.word && randomKana.word !== randomKana.hiragana) {
+            hintElement.textContent = `${randomKana.meaning} (${randomKana.word})`;
+            hintElement.style.display = 'block';
+        } else if (randomKana.meaning) {
+            hintElement.textContent = randomKana.meaning;
+            hintElement.style.display = 'block';
+        } else {
+            hintElement.style.display = 'none';
+        }
+    }
 }
 
 function generateVolleyOptions(targetData) {
@@ -784,6 +797,23 @@ function nextKanaVolley() {
 
     kanaMatchState.timeLeft = kanaMatchState.maxTime;
     kanaMatchState.timer = setInterval(updateKanaTimer, 50);
+
+    // 顯示漢字/中文提示
+    const hintElement = document.getElementById('kana-volley-hint');
+    if (hintElement) {
+        if (randomWordObj.meaning && randomWordObj.kana && randomWordObj.kana !== randomWordObj.hiragana) {
+            hintElement.textContent = `${randomWordObj.meaning} (${randomWordObj.kana})`;
+            hintElement.style.display = 'block';
+        } else if (randomWordObj.meaning) {
+            hintElement.textContent = randomWordObj.meaning;
+            hintElement.style.display = 'block';
+        } else if (randomWordObj.word && randomWordObj.word !== randomWordObj.hiragana) {
+            hintElement.textContent = randomWordObj.word;
+            hintElement.style.display = 'block';
+        } else {
+            hintElement.style.display = 'none';
+        }
+    }
 }
 
 function renderKanaInputArea(length) {

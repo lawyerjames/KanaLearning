@@ -372,8 +372,21 @@ header {
   align-items: center;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   border: 4px solid var(--accent-color);
-  animation: float 2s ease-in-out infinite;
   z-index: 2;
+  margin-top: 15px;
+}
+
+.volley-hint {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 2px 10px;
+  border-radius: 10px;
+  position: absolute;
+  top: -20px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 @keyframes float {
@@ -606,8 +619,20 @@ input[type="text"]:focus {
 }
 
 /* 擲硬幣動畫與樣式 */
+#coin-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#coin-modal.hidden {
+  display: none !important;
+}
+
 .coin-card {
   width: 350px;
+  margin: auto;
+  position: relative;
 }
 
 .coin-container {

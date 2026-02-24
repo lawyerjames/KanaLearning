@@ -80,6 +80,7 @@
                         <div class="timer-bar-container">
                             <div class="timer-bar" id="volley-timer"></div>
                         </div>
+                        <div class="volley-hint" id="volley-hint"></div>
                         <div class="volley-question" id="volley-question">?</div>
                         <div class="volley-message" id="volley-message">READY</div>
                     </div>
@@ -129,6 +130,7 @@
                         <div class="timer-bar-container">
                             <div class="timer-bar" id="kana-volley-timer"></div>
                         </div>
+                        <div class="volley-hint" id="kana-volley-hint"></div>
                         <!-- 文字較長時會自動適應 -->
                         <div class="volley-question kana-question-display" id="kana-volley-question">?</div>
                         <div class="volley-message" id="kana-volley-message">READY</div>
@@ -230,13 +232,13 @@
             <p>請選擇硬幣正反面來決定發球權！</p>
             <div class="coin-container" id="coin-container">
                 <div class="coin" id="coin-element">
-                    <div class="coin-face coin-front">烏野<br>(藍)</div>
-                    <div class="coin-face coin-back">對手<br>(黃)</div>
+                    <div class="coin-face coin-front">藍色</div>
+                    <div class="coin-face coin-back">黃色</div>
                 </div>
             </div>
             <div class="coin-choice-area mt-3" id="coin-choice-area">
-                <button class="btn btn-primary coin-btn" data-choice="front">選擇 藍色 (烏野)</button>
-                <button class="btn btn-success coin-btn" data-choice="back">選擇 黃色 (對手)</button>
+                <button class="btn btn-primary coin-btn" data-choice="front">選擇 藍色</button>
+                <button class="btn btn-warning coin-btn" data-choice="back">選擇 黃色</button>
             </div>
             <div class="coin-result-area mt-3 hidden" id="coin-result-area">
                 <p id="coin-result-text" class="mb-3">你猜對了！請選擇：</p>
