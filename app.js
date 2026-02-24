@@ -329,10 +329,10 @@ const volleyData = {
 };
 
 const opponentConfig = {
-    '1': { name: '扇南高校', time: 6, players: ['十和田', '秋宮'], probHira: 1.0 },
-    '2': { name: '和久谷南', time: 6, players: ['中島', '川渡'], probHira: 0.75 },
-    '3': { name: '青葉城西', time: 6, players: ['及川', '岩泉', '金田一', '國見', '京谷', '花卷', '松川'], probHira: 0.5 },
-    '4': { name: '白鳥澤', time: 6, players: ['牛島', '天童', '五色', '白布', '大平', '瀨見', '山形'], probHira: 0.25 }
+    '1': { name: '扇南高校', time: 5, players: ['十和田', '秋宮'], probHira: 1.0 },
+    '2': { name: '和久谷南', time: 4, players: ['中島', '川渡'], probHira: 0.75 },
+    '3': { name: '青葉城西', time: 3, players: ['及川', '岩泉', '金田一', '國見', '京谷', '花卷', '松川'], probHira: 0.5 },
+    '4': { name: '白鳥澤', time: 2, players: ['牛島', '天童', '五色', '白布', '大平', '瀨見', '山形'], probHira: 0.25 }
 };
 
 const karasunoPlayers = ['日向', '影山', '澤村', '菅原', '東峰', '西谷', '田中', '月島', '山口'];
