@@ -34,6 +34,17 @@ const ui = {
     soundOptionsContainer: document.getElementById('sound-options-container'),
 
     areaKana: document.getElementById('game-area-kana'),
+    kanaDiffSelector: document.getElementById('kana-difficulty-selector'),
+    kanaDiffBtns: document.querySelectorAll('.kana-diff-btn'),
+    kanaOpponentName: document.getElementById('kana-opponent-name'),
+    kanaOpponentScoreVal: document.getElementById('kana-opponent-score-val'),
+    kanaPlayerScoreVal: document.getElementById('kana-player-score-val'),
+    kanaVolleyQuestion: document.getElementById('kana-volley-question'),
+    kanaVolleyMessage: document.getElementById('kana-volley-message'),
+    kanaVolleyTimerBar: document.getElementById('kana-volley-timer'),
+    kanaOptionsContainer: document.getElementById('kana-options-container'),
+    kanaInputArea: document.getElementById('kana-input-area'),
+
     areaBlanks: document.getElementById('game-area-blanks'),
     gojuonGrid: document.getElementById('gojuon-grid'),
     optionsContainer: document.getElementById('options-container'),
@@ -53,6 +64,15 @@ const ui = {
     playerNameInput: document.getElementById('player-name'),
     btnSaveScore: document.getElementById('btn-save-score'),
 
+    // 擲硬幣
+    coinModal: document.getElementById('coin-modal'),
+    coinElement: document.getElementById('coin-element'),
+    coinChoiceArea: document.getElementById('coin-choice-area'),
+    coinResultArea: document.getElementById('coin-result-area'),
+    coinResultText: document.getElementById('coin-result-text'),
+    coinBtns: document.querySelectorAll('.coin-btn'),
+    actionBtns: document.querySelectorAll('.action-btn'),
+
     // 排行榜
     leaderboardList: document.getElementById('leaderboard-list'),
     tabBtns: document.querySelectorAll('.tab-btn'),
@@ -71,7 +91,7 @@ function init() {
                 renderLeaderboard('sound'); // 預設顯示讀音配對
             } else {
                 const mode = target.replace('screen-', '');
-                if (mode === 'fill-blanks' || mode === 'match-sound') {
+                if (mode === 'fill-blanks' || mode === 'match-sound' || mode === 'match-kana') {
                     showScreen(mode);
                     // 設定題與對戰題需要先選難度，不直接開始遊戲
                 } else {
@@ -81,12 +101,14 @@ function init() {
         });
     });
 
-    // 綁定難度選擇按鈕 (功能一 & 功能三)
+    // 綁定難度選擇按鈕
     ui.diffBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const level = btn.dataset.level;
             if (btn.classList.contains('sound-diff-btn')) {
                 startGame('match-sound', level);
+            } else if (btn.classList.contains('kana-diff-btn')) {
+                startGame('match-kana', level);
             } else {
                 startGame('fill-blanks', level);
             }
@@ -146,18 +168,27 @@ function showScreen(screenName) {
             ui.areaBlanks.classList.add('hidden');
             ui.displayTime.textContent = "00:00";
             ui.displayScore.textContent = "0";
-        } else if (screenName === 'match-sound') {
+        } else if (screenName === 'match-sound' || screenName === 'match-kana') {
             // 進入對戰模式時，顯示難度選擇
-            ui.soundDiffSelector.classList.remove('hidden');
+            const isMatchSound = screenName === 'match-sound';
+            ui.soundDiffSelector.classList.toggle('hidden', !isMatchSound);
             ui.areaSound.classList.add('hidden');
+            ui.kanaDiffSelector.classList.toggle('hidden', isMatchSound);
+            ui.areaKana.classList.add('hidden');
+
             ui.displayTime.textContent = "00:00";
             ui.displayScore.textContent = "0";
 
             // 處理關卡解鎖機制
-            const unlockLevel = parseInt(localStorage.getItem('kanagame_unlock_level')) || 1;
-            ui.soundDiffBtns.forEach(btn => {
+            const unlockLevelSound = parseInt(localStorage.getItem('kanagame_unlock_level')) || 1;
+            const unlockLevelKana = parseInt(localStorage.getItem('kanagame_kana_unlock_level')) || 1;
+
+            const targetBtns = isMatchSound ? ui.soundDiffBtns : ui.kanaDiffBtns;
+            const targetUnlockLevel = isMatchSound ? unlockLevelSound : unlockLevelKana;
+
+            targetBtns.forEach(btn => {
                 const level = parseInt(btn.dataset.level);
-                if (level > unlockLevel) {
+                if (level > targetUnlockLevel) {
                     btn.disabled = true;
                     btn.style.opacity = '0.5';
                     btn.innerHTML = `🔒 關卡 ${level} (???)`;
@@ -165,10 +196,17 @@ function showScreen(screenName) {
                     btn.disabled = false;
                     btn.style.opacity = '1';
                     // 恢復原本的文字
-                    if (level === 1) btn.innerHTML = '⭐ 預賽 (扇南) - 5秒';
-                    if (level === 2) btn.innerHTML = '⭐⭐ 複賽 (和久谷南) - 4秒';
-                    if (level === 3) btn.innerHTML = '⭐⭐⭐ 準決賽 (青葉城西) - 3秒';
-                    if (level === 4) btn.innerHTML = '⭐⭐⭐⭐ 決賽 (白鳥澤) - 2秒';
+                    if (isMatchSound) {
+                        if (level === 1) btn.innerHTML = '⭐ 預賽 (扇南) - 5秒';
+                        if (level === 2) btn.innerHTML = '⭐⭐ 複賽 (和久谷南) - 4秒';
+                        if (level === 3) btn.innerHTML = '⭐⭐⭐ 準決賽 (青葉城西) - 3秒';
+                        if (level === 4) btn.innerHTML = '⭐⭐⭐⭐ 決賽 (白鳥澤) - 2秒';
+                    } else {
+                        if (level === 1) btn.innerHTML = '⭐ 預賽 (扇南) - 1字(5秒)';
+                        if (level === 2) btn.innerHTML = '⭐⭐ 複賽 (和久谷南) - 2字(4秒)';
+                        if (level === 3) btn.innerHTML = '⭐⭐⭐ 準決賽 (青葉城西) - 3字(3秒)';
+                        if (level === 4) btn.innerHTML = '⭐⭐⭐⭐ 決賽 (白鳥澤) - 4字(2秒)';
+                    }
                 }
             });
         }
@@ -556,96 +594,400 @@ function endVolleyballMatch(winner) {
     setTimeout(endGame, 3000);
 }
 
-// --- 遊戲邏輯：功能二 (平片假名配對) ---
-let matchedPairsKana = 0;
-let firstCardKana = null;
-let isAnimatingKana = false;
+// --- 遊戲邏輯：功能二 (平片假名配對 - 排球模式) ---
+const kanaMatchState = {
+    timer: null,
+    timeLeft: 0,
+    maxTime: 0,
+    opponentScore: 0,
+    playerScore: 0,
+    currentLevel: '1',
+    isAnimating: false,
+    deuceMode: false,
+    isAttacking: true, // true: 玩家發球/扣球 (攻), false: 玩家接球 (守)
+    targetWordObj: null,
+    targetKanaArray: [], // 需要依序點擊的陣列
+    currentIndex: 0,
+    questionType: 'hiragana',
+    answerType: 'katakana'
+};
 
-function startKanaMatchGame() {
-    ui.areaKana.innerHTML = '';
-    matchedPairsKana = 0;
-    firstCardKana = null;
-    isAnimatingKana = false;
+function showCoinToss(difficulty) {
+    kanaMatchState.currentLevel = difficulty;
+    ui.coinModal.classList.remove('hidden');
+    ui.coinResultArea.classList.add('hidden');
+    ui.coinChoiceArea.classList.remove('hidden');
+    ui.coinElement.className = 'coin'; // 復原硬幣
 
-    // 隨機抽選 8 個不同的假名 (共 16 張卡片，4x4 版面)
-    const shuffledData = [...cleanedKanaData].sort(() => 0.5 - Math.random());
-    const selectedKana = shuffledData.slice(0, 8);
+    // 清除舊監聽器
+    const oldChoiceBtns = ui.coinChoiceArea.cloneNode(true);
+    ui.coinChoiceArea.parentNode.replaceChild(oldChoiceBtns, ui.coinChoiceArea);
+    ui.coinChoiceArea = document.getElementById('coin-choice-area');
+    const newCoinBtns = ui.coinChoiceArea.querySelectorAll('.coin-btn');
 
-    // 產生配對陣列：平假名 與 片假名
-    const cards = [];
-    selectedKana.forEach(k => {
-        cards.push({ id: k.hiragana, type: 'hiragana', display: k.hiragana, obj: k });
-        cards.push({ id: k.hiragana, type: 'katakana', display: k.katakana, obj: k });
+    newCoinBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const playerChoice = btn.dataset.choice;
+            handleCoinFlip(playerChoice);
+        });
     });
-
-    // 打亂卡片
-    cards.sort(() => 0.5 - Math.random());
-
-    const grid = document.createElement('div');
-    grid.className = 'gojuon-grid';
-    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-
-    cards.forEach((card, index) => {
-        const btn = document.createElement('div');
-        btn.className = 'kana-card';
-        btn.dataset.id = card.id;
-        btn.dataset.type = card.type;
-        btn.innerHTML = card.display;
-
-        btn.addEventListener('click', () => handleKanaCardClick(btn, card));
-        grid.appendChild(btn);
-    });
-
-    ui.areaKana.appendChild(grid);
 }
 
-function handleKanaCardClick(cardElement, cardData) {
-    if (isAnimatingKana || cardElement.classList.contains('matched') || cardElement.classList.contains('selected')) {
+function handleCoinFlip(playerChoice) {
+    ui.coinChoiceArea.classList.add('hidden');
+    // true = 藍色(front), false = 黃色(back)
+    const resultIsFront = Math.random() < 0.5;
+    const resultChoice = resultIsFront ? 'front' : 'back';
+
+    ui.coinElement.className = `coin flip-${resultChoice}`;
+
+    setTimeout(() => {
+        ui.coinResultArea.classList.remove('hidden');
+        if (playerChoice === resultChoice) {
+            ui.coinResultText.textContent = '你猜對了！請選擇：';
+            ui.actionBtns.forEach(b => b.hidden = false);
+            setupActionBtns(true);
+        } else {
+            ui.coinResultText.textContent = '猜錯了！由亂數決定發球權...';
+            ui.actionBtns.forEach(b => b.hidden = true);
+            const isPlayerAttack = Math.random() < 0.5;
+            setTimeout(() => {
+                confirmCoinTossResult(isPlayerAttack);
+            }, 1500);
+        }
+    }, 3000);
+}
+
+function setupActionBtns() {
+    const oldResultArea = ui.coinResultArea.cloneNode(true);
+    ui.coinResultArea.parentNode.replaceChild(oldResultArea, ui.coinResultArea);
+    ui.coinResultArea = document.getElementById('coin-result-area');
+    ui.coinResultText = document.getElementById('coin-result-text');
+    const newActionBtns = ui.coinResultArea.querySelectorAll('.action-btn');
+
+    newActionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            confirmCoinTossResult(btn.dataset.action === 'serve');
+        });
+    });
+}
+
+function confirmCoinTossResult(isAttacking) {
+    ui.coinModal.classList.add('hidden');
+    kanaMatchState.isAttacking = isAttacking;
+    startKanaMatchMatch();
+}
+
+function startKanaMatchMatch() {
+    const config = opponentConfig[kanaMatchState.currentLevel] || opponentConfig['1'];
+    kanaMatchState.maxTime = config.time * 1000;
+    kanaMatchState.opponentScore = 0;
+    kanaMatchState.playerScore = 0;
+    kanaMatchState.deuceMode = false;
+    kanaMatchState.isAnimating = false;
+
+    ui.kanaOpponentName.textContent = config.name;
+    updateKanaScoreboards();
+
+    showKanaMessage('READY', 'warning');
+    ui.kanaVolleyQuestion.textContent = '🏐';
+    ui.kanaOptionsContainer.innerHTML = '';
+    ui.kanaInputArea.innerHTML = '';
+    ui.kanaVolleyTimerBar.style.width = '100%';
+
+    // 啟動主計時器以記錄總耗時
+    startTimer();
+
+    setTimeout(() => {
+        ui.kanaVolleyMessage.classList.remove('show');
+        nextKanaVolley();
+    }, 1500);
+}
+
+function updateKanaScoreboards() {
+    ui.kanaOpponentScoreVal.textContent = kanaMatchState.opponentScore;
+    ui.kanaPlayerScoreVal.textContent = kanaMatchState.playerScore;
+}
+
+function nextKanaVolley() {
+    if (kanaMatchState.isAnimating) return;
+
+    clearInterval(kanaMatchState.timer);
+    ui.kanaVolleyTimerBar.style.width = '100%';
+    ui.kanaVolleyTimerBar.className = 'timer-bar safe';
+
+    const level = kanaMatchState.currentLevel;
+    let pool = [];
+    if (level === '1') {
+        pool = cleanedKanaData.map(k => ({ hiragana: k.hiragana, katakana: k.katakana, romaji: k.romaji }));
+    } else {
+        pool = haikyuuWords[level];
+    }
+
+    const randomWordObj = pool[Math.floor(Math.random() * pool.length)];
+    kanaMatchState.targetWordObj = randomWordObj;
+
+    const config = opponentConfig[level] || opponentConfig['1'];
+    const isHiraganaPrimary = Math.random() < config.probHira;
+    const primaryType = isHiraganaPrimary ? 'hiragana' : 'katakana';
+
+    let possibleSecondaryTypes = ['romaji'];
+    if (primaryType === 'katakana') possibleSecondaryTypes.push('hiragana');
+    else if (primaryType === 'hiragana' && config.probHira < 1.0) possibleSecondaryTypes.push('katakana');
+
+    const secondaryType = possibleSecondaryTypes[Math.floor(Math.random() * possibleSecondaryTypes.length)];
+
+    let questionType, answerType;
+    if (Math.random() < 0.5) {
+        questionType = primaryType;
+        answerType = secondaryType;
+    } else {
+        questionType = secondaryType;
+        answerType = primaryType;
+    }
+
+    kanaMatchState.questionType = questionType;
+    kanaMatchState.answerType = answerType;
+
+    let questionString = '';
+    let targetArray = [];
+
+    if (level === '1') {
+        questionString = randomWordObj[questionType] || randomWordObj.romaji;
+        targetArray = [randomWordObj];
+    } else {
+        let qStr = '';
+        for (let i = 0; i < randomWordObj.hiragana.length; i++) {
+            const hiraChar = randomWordObj.hiragana[i];
+            const kanaBase = cleanedKanaData.find(k => k.hiragana === hiraChar);
+            if (kanaBase) {
+                qStr += questionType === 'romaji' ? (i > 0 ? '-' : '') + kanaBase.romaji : kanaBase[questionType];
+                targetArray.push(kanaBase);
+            } else {
+                qStr += hiraChar;
+                targetArray.push({ hiragana: hiraChar, katakana: hiraChar, romaji: hiraChar });
+            }
+        }
+        questionString = qStr;
+    }
+
+    kanaMatchState.targetKanaArray = targetArray;
+    kanaMatchState.currentIndex = 0;
+
+    ui.kanaVolleyQuestion.textContent = questionString;
+    playAudio(randomWordObj.hiragana);
+
+    generateKanaOptions(targetArray, answerType);
+    renderKanaInputArea(targetArray.length);
+
+    kanaMatchState.timeLeft = kanaMatchState.maxTime;
+    kanaMatchState.timer = setInterval(updateKanaTimer, 50);
+}
+
+function renderKanaInputArea(length) {
+    ui.kanaInputArea.innerHTML = '';
+    for (let i = 0; i < length; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'kana-input-slot';
+        ui.kanaInputArea.appendChild(slot);
+    }
+}
+
+function generateKanaOptions(targetArray, answerType) {
+    ui.kanaOptionsContainer.innerHTML = '';
+
+    const optionsMap = new Map();
+    targetArray.forEach(k => {
+        optionsMap.set(k[answerType], k);
+    });
+
+    const totalOptions = targetArray.length > 2 ? targetArray.length + 3 : 4;
+    let pool = [...cleanedKanaData];
+    pool.sort(() => 0.5 - Math.random());
+
+    for (let i = 0; i < pool.length && optionsMap.size < totalOptions; i++) {
+        const k = pool[i];
+        if (!optionsMap.has(k[answerType])) {
+            optionsMap.set(k[answerType], k);
+        }
+    }
+
+    const options = Array.from(optionsMap.values());
+    options.sort(() => 0.5 - Math.random());
+
+    options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn kana-opt-btn';
+        btn.textContent = opt[answerType];
+
+        btn.addEventListener('click', () => checkKanaAnswer(opt[answerType], btn));
+        ui.kanaOptionsContainer.appendChild(btn);
+    });
+}
+
+function checkKanaAnswer(selectedText, btnElement) {
+    if (kanaMatchState.isAnimating) return;
+
+    const currentIndex = kanaMatchState.currentIndex;
+    const correctTarget = kanaMatchState.targetKanaArray[currentIndex];
+    const correctText = correctTarget[kanaMatchState.answerType];
+
+    if (selectedText === correctText) {
+        const slots = ui.kanaInputArea.querySelectorAll('.kana-input-slot');
+        slots[currentIndex].textContent = selectedText;
+        slots[currentIndex].classList.add('filled');
+        kanaMatchState.currentIndex++;
+
+        if (kanaMatchState.currentIndex === kanaMatchState.targetKanaArray.length) {
+            kanaMatchState.isAnimating = true;
+            clearInterval(kanaMatchState.timer);
+            const btns = ui.kanaOptionsContainer.querySelectorAll('.option-btn');
+            btns.forEach(b => b.disabled = true);
+
+            showKanaMessage(getKanaActionMessage(true), 'success');
+            addScore(50 * kanaMatchState.targetKanaArray.length);
+            kanaMatchState.playerScore++;
+            kanaMatchState.isAttacking = true;
+
+            updateKanaScoreboards();
+            setTimeout(checkKanaMatchWinner, 1500);
+        }
+    } else {
+        kanaMatchState.isAnimating = true;
+        clearInterval(kanaMatchState.timer);
+        const btns = ui.kanaOptionsContainer.querySelectorAll('.option-btn');
+        btns.forEach(b => b.disabled = true);
+        btnElement.style.backgroundColor = 'var(--error-color)';
+
+        showKanaMessage(getKanaActionMessage(false), 'error');
+        kanaMatchState.opponentScore++;
+        kanaMatchState.isAttacking = false;
+
+        updateKanaScoreboards();
+        setTimeout(checkKanaMatchWinner, 1500);
+    }
+}
+
+function updateKanaTimer() {
+    kanaMatchState.timeLeft -= 50;
+    if (kanaMatchState.timeLeft < 0) kanaMatchState.timeLeft = 0;
+    const percentage = (kanaMatchState.timeLeft / kanaMatchState.maxTime) * 100;
+
+    ui.kanaVolleyTimerBar.style.width = percentage + '%';
+
+    if (percentage <= 0) {
+        clearInterval(kanaMatchState.timer);
+        onKanaTimeout();
         return;
     }
 
-    playAudio(cardData.obj.word); // 點擊時播放該字對應單字發音 (或改成播放該假名發音 cardData.obj.hiragana)
-
-    cardElement.classList.add('selected');
-
-    if (!firstCardKana) {
-        firstCardKana = { el: cardElement, data: cardData };
+    if (percentage < 30) {
+        ui.kanaVolleyTimerBar.className = 'timer-bar danger';
+    } else if (percentage < 60) {
+        ui.kanaVolleyTimerBar.className = 'timer-bar warning';
     } else {
-        const secondCard = { el: cardElement, data: cardData };
-        isAnimatingKana = true;
-
-        // 配對條件：同一個字母，且一個是平假名一個是片假名
-        if (firstCardKana.data.id === secondCard.data.id && firstCardKana.data.type !== secondCard.data.type) {
-            addScore(100);
-
-            setTimeout(() => {
-                firstCardKana.el.classList.remove('selected');
-                secondCard.el.classList.remove('selected');
-                firstCardKana.el.classList.add('matched');
-                secondCard.el.classList.add('matched');
-
-                showWordModal(cardData.obj);
-
-                matchedPairsKana++;
-                if (matchedPairsKana === 8) {
-                    setTimeout(endGame, 1000);
-                }
-                resetTurnKana();
-            }, 600);
-        } else {
-            setTimeout(() => {
-                firstCardKana.el.classList.remove('selected');
-                secondCard.el.classList.remove('selected');
-                if (gameState.score > 0) addScore(-10);
-                resetTurnKana();
-            }, 1000);
-        }
+        ui.kanaVolleyTimerBar.className = 'timer-bar safe';
     }
 }
 
-function resetTurnKana() {
-    firstCardKana = null;
-    isAnimatingKana = false;
+function onKanaTimeout() {
+    kanaMatchState.isAnimating = true;
+    const btns = ui.kanaOptionsContainer.querySelectorAll('.option-btn');
+    btns.forEach(b => b.disabled = true);
+
+    showKanaMessage(getKanaActionMessage(false), 'error');
+    kanaMatchState.opponentScore++;
+    kanaMatchState.isAttacking = false;
+
+    updateKanaScoreboards();
+    setTimeout(checkKanaMatchWinner, 1500);
+}
+
+function getKanaActionMessage(isSuccessPlayer) {
+    const config = opponentConfig[kanaMatchState.currentLevel] || opponentConfig['1'];
+
+    if (isSuccessPlayer) {
+        if (kanaMatchState.isAttacking) {
+            const players = ['日向', '影山', '東峰', '田中', '月島', '山口'];
+            const p = players[Math.floor(Math.random() * players.length)];
+            return p === '山口' ? `${p} 發球得分！` : `${p} 扣球成功！`;
+        } else {
+            const players = ['日向', '影山', '東峰', '田中', '月島', '西谷', '澤村'];
+            const p = players[Math.floor(Math.random() * players.length)];
+            if (p === '西谷' || p === '澤村') return `${p} 接球完美！`;
+            return `${p} 攔網成功！`;
+        }
+    } else {
+        const oppPlayer = config.players[Math.floor(Math.random() * config.players.length)];
+        const actions = ['扣球成功！', '防守成功！', '發球得分！'];
+        return `${oppPlayer} ${actions[Math.floor(Math.random() * actions.length)]}`;
+    }
+}
+
+function showKanaMessage(msg, type) {
+    ui.kanaVolleyMessage.textContent = msg;
+    ui.kanaVolleyMessage.style.color = type === 'success' ? '#4CAF50' : '#FF5722';
+    if (type === 'warning') ui.kanaVolleyMessage.style.color = '#FFC107';
+
+    ui.kanaVolleyMessage.classList.remove('show');
+    void ui.kanaVolleyMessage.offsetWidth;
+    ui.kanaVolleyMessage.classList.add('show');
+}
+
+function checkKanaMatchWinner() {
+    const pScore = kanaMatchState.playerScore;
+    const oScore = kanaMatchState.opponentScore;
+
+    if (pScore >= 24 && oScore >= 24) {
+        if (!kanaMatchState.deuceMode) {
+            kanaMatchState.deuceMode = true;
+            showKanaMessage('Deuce!', 'warning');
+            setTimeout(() => {
+                ui.kanaVolleyMessage.classList.remove('show');
+                kanaMatchState.isAnimating = false;
+                nextKanaVolley();
+            }, 1500);
+            return;
+        }
+
+        if (Math.abs(pScore - oScore) >= 2) {
+            endKanaMatch(pScore > oScore ? 'player' : 'opponent');
+            return;
+        }
+    } else {
+        if (pScore >= 25) {
+            endKanaMatch('player');
+            return;
+        } else if (oScore >= 25) {
+            endKanaMatch('opponent');
+            return;
+        }
+    }
+
+    kanaMatchState.isAnimating = false;
+    ui.kanaVolleyMessage.classList.remove('show');
+    nextKanaVolley();
+}
+
+function endKanaMatch(winner) {
+    ui.kanaOptionsContainer.innerHTML = '';
+    ui.kanaVolleyQuestion.textContent = '🏆';
+    clearInterval(kanaMatchState.timer);
+
+    if (winner === 'player') {
+        showKanaMessage('烏野高校 勝利！', 'success');
+        addScore(1000);
+
+        const currentUnlock = parseInt(localStorage.getItem('kanagame_kana_unlock_level')) || 1;
+        const playedLevel = parseInt(kanaMatchState.currentLevel);
+        if (playedLevel === currentUnlock && playedLevel < 4) {
+            localStorage.setItem('kanagame_kana_unlock_level', (playedLevel + 1).toString());
+        }
+    } else {
+        showKanaMessage('比賽結束...', 'error');
+    }
+
+    setTimeout(endGame, 3000);
 }
 
 // --- 遊戲邏輯：功能三 (五十音填空) ---

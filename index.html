@@ -102,9 +102,54 @@
 
         <!-- 功能二：平片假名配對畫面 -->
         <section id="screen-match-kana" class="screen hidden">
-            <h2 class="section-title">平片假名配對</h2>
-            <div class="game-area" id="game-area-kana">
-                <!-- 遊戲內容由 JS 動態生成 -->
+            <h2 class="section-title">平片假名對決</h2>
+
+            <!-- 難度選擇區 -->
+            <div class="difficulty-selector" id="kana-difficulty-selector">
+                <p>請選擇比賽：</p>
+                <button class="btn btn-diff kana-diff-btn" data-level="1">⭐ 預賽 (扇南) - 1字(5秒)</button>
+                <button class="btn btn-diff kana-diff-btn" data-level="2">⭐⭐ 複賽 (和久谷南) - 2字(4秒)</button>
+                <button class="btn btn-diff kana-diff-btn" data-level="3">⭐⭐⭐ 準決賽 (青葉城西) - 3字(3秒)</button>
+                <button class="btn btn-diff kana-diff-btn" data-level="4">⭐⭐⭐⭐ 決賽 (白鳥澤) - 4字(2秒)</button>
+            </div>
+
+            <!-- 遊戲區 -->
+            <div class="game-area hidden" id="game-area-kana">
+                <div class="volleyball-court">
+                    <!-- 電腦區 (上) -->
+                    <div class="court-half opponent-half">
+                        <div class="scoreboard opponent-board">
+                            <div class="team-name" id="kana-opponent-name">對手</div>
+                            <div class="score-number" id="kana-opponent-score-val">0</div>
+                        </div>
+                    </div>
+
+                    <!-- 球網 / 題目區 (中) -->
+                    <div class="net-area">
+                        <div class="timer-bar-container">
+                            <div class="timer-bar" id="kana-volley-timer"></div>
+                        </div>
+                        <!-- 文字較長時會自動適應 -->
+                        <div class="volley-question kana-question-display" id="kana-volley-question">?</div>
+                        <div class="volley-message" id="kana-volley-message">READY</div>
+                    </div>
+
+                    <!-- 玩家區 (下) / 填答區 -->
+                    <div class="court-half player-half">
+                        <div class="scoreboard player-board">
+                            <div class="team-name">烏野高校</div>
+                            <div class="score-number" id="kana-player-score-val">0</div>
+                        </div>
+                        <div class="kana-input-area" id="kana-input-area">
+                            <!-- JS 動態生成填寫框 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 選項區 -->
+                <div class="options-container" id="kana-options-container">
+                    <!-- 選項由 JS 生成 -->
+                </div>
             </div>
         </section>
 
@@ -174,6 +219,29 @@
                 <label for="player-name">請輸入你的名字：</label>
                 <input type="text" id="player-name" placeholder="小天才" maxlength="10">
                 <button class="btn btn-primary" id="btn-save-score">儲存成績</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 擲硬幣彈窗 -->
+    <div id="coin-modal" class="hidden">
+        <div class="result-card coin-card">
+            <h2>選邊發球</h2>
+            <p>請選擇硬幣正反面來決定發球權！</p>
+            <div class="coin-container" id="coin-container">
+                <div class="coin" id="coin-element">
+                    <div class="coin-face coin-front">烏野<br>(藍)</div>
+                    <div class="coin-face coin-back">對手<br>(黃)</div>
+                </div>
+            </div>
+            <div class="coin-choice-area mt-3" id="coin-choice-area">
+                <button class="btn btn-primary coin-btn" data-choice="front">選擇 藍色 (烏野)</button>
+                <button class="btn btn-success coin-btn" data-choice="back">選擇 黃色 (對手)</button>
+            </div>
+            <div class="coin-result-area mt-3 hidden" id="coin-result-area">
+                <p id="coin-result-text" class="mb-3">你猜對了！請選擇：</p>
+                <button class="btn btn-primary action-btn" data-action="serve">先攻 (發球)</button>
+                <button class="btn btn-success action-btn" data-action="receive">先守 (接球)</button>
             </div>
         </div>
     </div>

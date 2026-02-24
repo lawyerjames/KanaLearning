@@ -86,3 +86,44 @@ const gojuonGridLayout = [
 const cleanedKanaData = kanaData.filter((item, index, self) =>
     index === self.findIndex((t) => t.hiragana === item.hiragana)
 );
+
+// 新增：排球少年專屬單字庫 (供平片假名配對模式使用)
+const haikyuuWords = {
+    '2': [
+        { hiragana: 'とす', katakana: 'トス', meaning: '托球' },
+        { hiragana: 'ねこ', katakana: 'ネコ', meaning: '貓(音駒)' },
+        { hiragana: 'くろ', katakana: 'クロ', meaning: '黑(黑尾)' },
+        { hiragana: 'ひな', katakana: 'ヒナ', meaning: '雛(日向)' },
+        { hiragana: 'うし', katakana: 'ウシ', meaning: '牛(牛島)' },
+        { hiragana: 'のや', katakana: 'ノヤ', meaning: '谷(西谷)' },
+        { hiragana: 'みや', katakana: 'ミヤ', meaning: '宮(兄弟)' },
+        { hiragana: 'なつ', katakana: 'ナツ', meaning: '夏(日向妹)' },
+        { hiragana: 'やく', katakana: 'ヤク', meaning: '夜久' },
+        { hiragana: 'わし', katakana: 'ワシ', meaning: '鷲(鷲匠)' }
+    ],
+    '3': [
+        { hiragana: 'ひなた', katakana: 'ヒナタ', meaning: '日向' },
+        { hiragana: 'あさひ', katakana: 'アサヒ', meaning: '旭(東峰)' },
+        { hiragana: 'たなか', katakana: 'タナカ', meaning: '田中' },
+        { hiragana: 'けんま', katakana: 'ケンマ', meaning: '研磨' },
+        { hiragana: 'きよこ', katakana: 'キヨコ', meaning: '潔子' },
+        { hiragana: 'しみず', katakana: 'シミズ', meaning: '清水' },
+        { hiragana: 'しらぶ', katakana: 'シラブ', meaning: '白布' },
+        { hiragana: 'ごしき', katakana: 'ゴシキ', meaning: '五色' },
+        { hiragana: 'りべろ', katakana: 'リベロ', meaning: '自由球員' },
+        { hiragana: 'からす', katakana: 'カラス', meaning: '烏' },
+        { hiragana: 'ふくろ', katakana: 'フクロ', meaning: '梟' }
+    ],
+    '4': [
+        { hiragana: 'かげやま', katakana: 'カゲヤマ', meaning: '影山' },
+        { hiragana: 'つきしま', katakana: 'ツキシマ', meaning: '月島' },
+        { hiragana: 'やまぐち', katakana: 'ヤマグチ', meaning: '山口' },
+        { hiragana: 'すがわら', katakana: 'スガワラ', meaning: '菅原' },
+        { hiragana: 'おいかわ', katakana: 'オイカワ', meaning: '及川' },
+        { hiragana: 'さわむら', katakana: 'サワムラ', meaning: '澤村' },
+        { hiragana: 'にしのや', katakana: 'ニシノヤ', meaning: '西谷' },
+        { hiragana: 'あかあし', katakana: 'アカアシ', meaning: '赤葦' },
+        { hiragana: 'もりすけ', katakana: 'モリスケ', meaning: '衛輔' },
+        { hiragana: 'しらとり', katakana: 'シラトリ', meaning: '白鳥' }
+    ]
+};

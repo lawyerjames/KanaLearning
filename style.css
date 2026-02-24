@@ -605,6 +605,119 @@ input[type="text"]:focus {
   border-color: var(--primary-color);
 }
 
+/* 擲硬幣動畫與樣式 */
+.coin-card {
+  width: 350px;
+}
+
+.coin-container {
+  width: 120px;
+  height: 120px;
+  margin: 20px auto;
+  perspective: 1000px;
+}
+
+.coin {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.coin-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: white;
+  border: 5px solid #fff;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.coin-front {
+  background-color: var(--primary-color);
+  transform: rotateY(0deg);
+}
+
+.coin-back {
+  background-color: #FFC107;
+  transform: rotateY(180deg);
+  color: #333;
+}
+
+.coin.flip-front {
+  transform: rotateY(1800deg);
+  /* 轉 5 圈後停在正面 */
+}
+
+.coin.flip-back {
+  transform: rotateY(1980deg);
+  /* 轉 5.5 圈後停在反面 */
+}
+
+.coin-choice-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coin-result-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 平片假名配對：玩家填寫區樣式 */
+.kana-input-area {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+}
+
+.kana-input-slot {
+  width: 45px;
+  height: 45px;
+  background-color: rgba(240, 240, 240, 0.8);
+  border: 2px dashed #aaa;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  transition: all 0.2s;
+}
+
+.kana-input-slot.filled {
+  background-color: #fff;
+  border: 2px solid var(--accent-color);
+  transform: scale(1.1);
+}
+
+/* 讓長度不一的單字題目可以自適應寬度 */
+.kana-question-display {
+  width: auto !important;
+  min-width: 80px;
+  padding: 0 20px;
+  border-radius: 40px !important;
+}
+
 /* 適應手機版面 (例如 iPhone 17 大小，最大寬度約 430px) */
 @media (max-width: 480px) {
   header {
@@ -683,5 +796,11 @@ input[type="text"]:focus {
   .stat-box {
     font-size: 1rem;
     padding: 0.4rem 0.8rem;
+  }
+
+  .kana-input-slot {
+    width: 38px;
+    height: 38px;
+    font-size: 1.5rem;
   }
 }
