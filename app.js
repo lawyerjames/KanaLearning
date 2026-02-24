@@ -354,10 +354,12 @@ function startVolleyballMatch(difficultyLevel) {
     const config = opponentConfig[difficultyLevel] || opponentConfig['1'];
     volleyData.currentLevel = difficultyLevel;
     volleyData.maxTime = config.time * 1000;
+    volleyData.timeLeft = volleyData.maxTime;
     volleyData.opponentScore = 0;
     volleyData.playerScore = 0;
     volleyData.deuceMode = false;
     volleyData.isAnimating = false;
+    volleyData.usedQuestions = [];
 
     ui.opponentName.textContent = config.name;
     updateVolleyballScoreboards();
@@ -388,8 +390,18 @@ function nextVolley() {
 
     const config = opponentConfig[volleyData.currentLevel] || opponentConfig['1'];
 
-    // 隨機抽選題目 (從清理過的資料集中)
-    const randomKana = cleanedKanaData[Math.floor(Math.random() * cleanedKanaData.length)];
+    // 初始化/重置已出過題目的紀錄
+    if (!volleyData.usedQuestions) volleyData.usedQuestions = [];
+
+    // 隨機抽選題目 (盡量不重複)
+    let availableKana = cleanedKanaData.filter(k => !volleyData.usedQuestions.includes(k.hiragana));
+    if (availableKana.length === 0) {
+        volleyData.usedQuestions = [];
+        availableKana = cleanedKanaData;
+    }
+    const randomKana = availableKana[Math.floor(Math.random() * availableKana.length)];
+    volleyData.usedQuestions.push(randomKana.hiragana);
+
     volleyData.targetKana = randomKana;
 
     // 先決定這球主要是考平假名還是片假名 (控制難度的比例)
@@ -424,6 +436,7 @@ function nextVolley() {
     generateVolleyOptions(randomKana);
 
     // 開始計時
+    volleyData.timeLeft = volleyData.maxTime;
     volleyData.timer = setInterval(updateVolleyTimer, 50);
 
     // 顯示漢字/中文提示
