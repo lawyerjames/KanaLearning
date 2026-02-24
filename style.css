@@ -1,18 +1,23 @@
 /* CSS Variables 糖果粉彩配色 */
 :root {
-  --primary-color: #FFB7B2; /* 粉紅 */
-  --secondary-color: #E2F0CB; /* 淺綠 */
-  --accent-color: #FFDAC1; /* 奶油橘 */
+  --primary-color: #FFB7B2;
+  /* 粉紅 */
+  --secondary-color: #E2F0CB;
+  /* 淺綠 */
+  --accent-color: #FFDAC1;
+  /* 奶油橘 */
   --text-dark: #333333;
   --text-light: #FFFFFF;
   --bg-color: #F8F9FA;
   --card-bg: #FFFFFF;
   --shadow-color: rgba(0, 0, 0, 0.1);
-  --success-color: #B5EAD7; /* 薄荷綠 */
-  --error-color: #FF9AA2; /* 柔和紅 */
+  --success-color: #B5EAD7;
+  /* 薄荷綠 */
+  --error-color: #FF9AA2;
+  /* 柔和紅 */
   --btn-shadow: 0 4px 6px var(--shadow-color);
   --btn-active-shadow: 0 2px 3px var(--shadow-color);
-  
+
   --font-main: 'Nunito', 'M PLUS Rounded 1c', sans-serif;
 }
 
@@ -37,8 +42,13 @@ body {
   display: none !important;
 }
 
-.mt-3 { margin-top: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
 
 /* 頂部資訊列 */
 header {
@@ -150,8 +160,15 @@ header {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .app-title {
@@ -245,7 +262,7 @@ header {
   padding: 1rem;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 15px;
-  box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .option-btn {
@@ -279,7 +296,8 @@ header {
 }
 
 /* 彈窗樣式 */
-#modal-overlay, #result-modal {
+#modal-overlay,
+#result-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -293,12 +311,13 @@ header {
   backdrop-filter: blur(5px);
 }
 
-.word-card, .result-card {
+.word-card,
+.result-card {
   background-color: var(--card-bg);
   padding: 2rem;
   border-radius: 20px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   transform: scale(0.9);
   animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   max-width: 90%;
@@ -306,7 +325,9 @@ header {
 }
 
 @keyframes popIn {
-  to { transform: scale(1); }
+  to {
+    transform: scale(1);
+  }
 }
 
 .card-image-container {
@@ -405,7 +426,89 @@ input[type="text"] {
   font-family: var(--font-main);
   text-align: center;
 }
+
 input[type="text"]:focus {
   outline: none;
   border-color: var(--primary-color);
+}
+
+/* 適應手機版面 (例如 iPhone 17 大小，最大寬度約 430px) */
+@media (max-width: 480px) {
+  header {
+    padding: 0.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  #app-container {
+    padding: 1rem;
+  }
+
+  .app-title {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .gojuon-grid {
+    gap: 0.3rem;
+  }
+
+  .kana-card {
+    padding: 0.2rem;
+    font-size: 1.5rem;
+    border-radius: 8px;
+    border-width: 1px;
+  }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+  }
+
+  .btn-menu {
+    font-size: 1.1rem;
+    padding: 1rem;
+    margin: 0.5rem auto;
+  }
+
+  .option-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 1.4rem;
+  }
+
+  .word-card,
+  .result-card {
+    padding: 1.5rem;
+    width: 90%;
+  }
+
+  .kana-large {
+    font-size: 2.2rem;
+  }
+
+  .card-image-container {
+    width: 100px;
+    height: 100px;
+    font-size: 4rem;
+  }
+
+  .leaderboard-list li {
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+
+  .stat-box {
+    font-size: 1rem;
+    padding: 0.4rem 0.8rem;
+  }
 }

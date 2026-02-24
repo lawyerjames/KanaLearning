@@ -1,69 +1,68 @@
 // data.js - 儲存五十音與單字資料
 const kanaData = [
     // あ行
-    { hiragana: 'あ', katakana: 'ア', romaji: 'a', word: 'あり', emoji: '🐜', meaning: '螞蟻' },
-    { hiragana: 'い', katakana: 'イ', romaji: 'i', word: 'いぬ', emoji: '🐕', meaning: '狗' },
-    { hiragana: 'う', katakana: 'ウ', romaji: 'u', word: 'うし', emoji: '🐄', meaning: '牛' },
-    { hiragana: 'え', katakana: 'エ', romaji: 'e', word: 'えんぴつ', emoji: '✏️', meaning: '鉛筆' },
-    { hiragana: 'お', katakana: 'オ', romaji: 'o', word: 'おにぎり', emoji: '🍙', meaning: '飯糰' },
-    
+    { hiragana: 'あ', katakana: 'ア', romaji: 'a', word: 'あさひ', emoji: '🧔🏻‍♂️', meaning: '旭(東峰)' },
+    { hiragana: 'い', katakana: 'イ', romaji: 'i', word: 'いわいずみ', emoji: '💪', meaning: '岩泉' },
+    { hiragana: 'う', katakana: 'ウ', romaji: 'u', word: 'うしじま', emoji: '🦅', meaning: '牛島' },
+    { hiragana: 'え', katakana: 'エ', romaji: 'e', word: 'えーす', emoji: '⭐', meaning: '王牌' },
+    { hiragana: 'お', katakana: 'オ', romaji: 'o', word: 'おいかわ', emoji: '👑', meaning: '及川' },
+
     // か行
-    { hiragana: 'か', katakana: 'カ', romaji: 'ka', word: 'かさ', emoji: '🌂', meaning: '傘' },
-    { hiragana: 'き', katakana: 'キ', romaji: 'ki', word: 'きのこ', emoji: '🍄', meaning: '蘑菇' },
-    { hiragana: 'く', katakana: 'ク', romaji: 'ku', word: 'くるま', emoji: '🚗', meaning: '車子' },
-    { hiragana: 'け', katakana: 'ケ', romaji: 'ke', word: 'けーき', emoji: '🍰', meaning: '蛋糕' },
-    { hiragana: 'こ', katakana: 'コ', romaji: 'ko', word: 'こま', emoji: '🌀', meaning: '陀螺' },
-    
+    { hiragana: 'か', katakana: 'カ', romaji: 'ka', word: 'かげやま', emoji: '🥛', meaning: '影山' },
+    { hiragana: 'き', katakana: 'キ', romaji: 'ki', word: 'きよこ', emoji: '👓', meaning: '潔子' },
+    { hiragana: 'く', katakana: 'ク', romaji: 'ku', word: 'くろお', emoji: '🐈‍⬛', meaning: '黑尾' },
+    { hiragana: 'け', katakana: 'ケ', romaji: 'ke', word: 'けんま', emoji: '🎮', meaning: '研磨' },
+    { hiragana: 'こ', katakana: 'コ', romaji: 'ko', word: 'こーち', emoji: '📣', meaning: '教練' },
+
     // さ行
-    { hiragana: 'さ', katakana: 'サ', romaji: 'sa', word: 'さくら', emoji: '🌸', meaning: '櫻花' },
-    { hiragana: 'し', katakana: 'シ', romaji: 'shi', word: 'しか', emoji: '🦌', meaning: '鹿' },
-    { hiragana: 'す', katakana: 'ス', romaji: 'su', word: 'すいか', emoji: '🍉', meaning: '西瓜' },
-    { hiragana: 'せ', katakana: 'セ', romaji: 'se', word: 'せみ', emoji: '🦗', meaning: '蟬' },
-    { hiragana: 'そ', katakana: 'ソ', romaji: 'so', word: 'そら', emoji: '☁️', meaning: '天空' },
-    
+    { hiragana: 'さ', katakana: 'サ', romaji: 'sa', word: 'さーぶ', emoji: '🏐', meaning: '發球' },
+    { hiragana: 'し', katakana: 'シ', romaji: 'shi', word: 'しみず', emoji: '📋', meaning: '清水' },
+    { hiragana: 'す', katakana: 'ス', romaji: 'su', word: 'すがわら', emoji: '🕊️', meaning: '菅原' },
+    { hiragana: 'せ', katakana: 'セ', romaji: 'se', word: 'せったー', emoji: '👐', meaning: '舉球員' },
+    { hiragana: 'そ', katakana: 'ソ', romaji: 'so', word: 'そっこう', emoji: '⚡', meaning: '速攻' },
+
     // た行
-    { hiragana: 'た', katakana: 'タ', romaji: 'ta', word: 'たこ', emoji: '🐙', meaning: '章魚' },
-    { hiragana: 'ち', katakana: 'チ', romaji: 'chi', word: 'ちきゅう', emoji: '🌍', meaning: '地球' },
-    { hiragana: 'つ', katakana: 'ツ', romaji: 'tsu', word: 'つくえ', emoji: '🪑', meaning: '桌子' },
-    { hiragana: 'て', katakana: 'テ', romaji: 'te', word: 'てぶくろ', emoji: '🧤', meaning: '手套' },
-    { hiragana: 'と', katakana: 'ト', romaji: 'to', word: 'とけい', emoji: '⌚', meaning: '手錶' },
-    
+    { hiragana: 'た', katakana: 'タ', romaji: 'ta', word: 'たなか', emoji: '🦲', meaning: '田中' },
+    { hiragana: 'ち', katakana: 'チ', romaji: 'chi', word: 'ちーむ', emoji: '🤝', meaning: '隊伍' },
+    { hiragana: 'つ', katakana: 'ツ', romaji: 'tsu', word: 'つきしま', emoji: '🌙', meaning: '月島' },
+    { hiragana: 'て', katakana: 'テ', romaji: 'te', word: 'てんどう', emoji: '🍫', meaning: '天童' },
+    { hiragana: 'と', katakana: 'ト', romaji: 'to', word: 'とす', emoji: '🤲', meaning: '托球' },
+
     // な行
-    { hiragana: 'な', katakana: 'ナ', romaji: 'na', word: 'なす', emoji: '🍆', meaning: '茄子' },
-    { hiragana: 'に', katakana: 'ニ', romaji: 'ni', word: 'にわとり', emoji: '🐔', meaning: '雞' },
-    { hiragana: 'ぬ', katakana: 'ヌ', romaji: 'nu', word: 'ぬいぐるみ', emoji: '🧸', meaning: '布偶' },
-    { hiragana: 'ね', katakana: 'ネ', romaji: 'ne', word: 'ねこ', emoji: '🐈', meaning: '貓' },
-    { hiragana: 'の', katakana: 'ノ', romaji: 'no', word: 'のこぎり', emoji: '🪚', meaning: '鋸子' },
-    
+    { hiragana: 'な', katakana: 'ナ', romaji: 'na', word: 'なつ', emoji: '👧', meaning: '夏(日向妹)' },
+    { hiragana: 'に', katakana: 'ニ', romaji: 'ni', word: 'にしのや', emoji: '⚡', meaning: '西谷' },
+    { hiragana: 'ぬ', katakana: 'ヌ', romaji: 'nu', word: 'ぬぐ', emoji: '👕', meaning: '脫下(外套)' },
+    { hiragana: 'ね', katakana: 'ネ', romaji: 'ne', word: 'ねこま', emoji: '🐱', meaning: '音駒' },
+    { hiragana: 'の', katakana: 'ノ', romaji: 'no', word: 'のや', emoji: '🦸‍♂️', meaning: '谷(西谷)' },
+
     // は行
-    { hiragana: 'は', katakana: 'ハ', romaji: 'ha', word: 'はさみ', emoji: '✂️', meaning: '剪刀' },
-    { hiragana: 'ひ', katakana: 'ヒ', romaji: 'hi', word: 'ひまわり', emoji: '🌻', meaning: '向日葵' },
-    { hiragana: 'ふ', katakana: 'フ', romaji: 'fu', word: 'ふね', emoji: '🚢', meaning: '船' },
-    { hiragana: 'へ', katakana: 'ヘ', romaji: 'he', word: 'へび', emoji: '🐍', meaning: '蛇' },
-    { hiragana: 'ほ', katakana: 'ホ', romaji: 'ho', word: 'ほん', emoji: '📘', meaning: '書本' },
-    
+    { hiragana: 'は', katakana: 'ハ', romaji: 'ha', word: 'はいきゅー', emoji: '🏐', meaning: '排球' },
+    { hiragana: 'ひ', katakana: 'ヒ', romaji: 'hi', word: 'ひなた', emoji: '☀️', meaning: '日向' },
+    { hiragana: 'ふ', katakana: 'フ', romaji: 'ふ', word: 'ふくろうだに', emoji: '🦉', meaning: '梟谷' },
+    { hiragana: 'へ', katakana: 'ヘ', romaji: 'he', word: 'へっでぃんぐ', emoji: '🤕', meaning: '頭球' },
+    { hiragana: 'ほ', katakana: 'ホ', romaji: 'ho', word: 'ほしうみ', emoji: '🌟', meaning: '星海' },
+
     // ま行
-    { hiragana: 'ま', katakana: 'マ', romaji: 'ma', word: 'みかん', emoji: '🍊', meaning: '橘子' }, // ま -> みかん? (修正: ま行單字應該以 ma 開頭，但為避免單字太難，這裡稍微借位，改回對的)
-    { hiragana: 'ま', katakana: 'マ', romaji: 'ma', word: 'まど', emoji: '🪟', meaning: '窗戶' }, // 用後者蓋過前者也可以，JS 會載入最後的定義。這裡直接修改。
-    { hiragana: 'み', katakana: 'ミ', romaji: 'mi', word: 'みかん', emoji: '🍊', meaning: '橘子' },
-    { hiragana: 'む', katakana: 'ム', romaji: 'mu', word: 'むし', emoji: '🐛', meaning: '蟲' },
-    { hiragana: 'め', katakana: 'メ', romaji: 'me', word: 'めがね', emoji: '👓', meaning: '眼鏡' },
-    { hiragana: 'も', katakana: 'モ', romaji: 'mo', word: 'もも', emoji: '🍑', meaning: '桃子' },
-    
+    { hiragana: 'ま', katakana: 'マ', romaji: 'ma', word: 'まねーじゃー', emoji: '📝', meaning: '經理' },
+    { hiragana: 'み', katakana: 'ミ', romaji: 'mi', word: 'みや', emoji: '🦊', meaning: '宮(兄弟)' },
+    { hiragana: 'む', katakana: 'ム', romaji: 'mu', word: 'むじなざか', emoji: '🦡', meaning: '貉坂' },
+    { hiragana: 'め', katakana: 'メ', romaji: 'me', word: 'めんばー', emoji: '🧑‍🤝‍🧑', meaning: '隊友' },
+    { hiragana: 'も', katakana: 'モ', romaji: 'mo', word: 'もりすけ', emoji: '🛡️', meaning: '衛輔(夜久)' },
+
     // や行
-    { hiragana: 'や', katakana: 'ヤ', romaji: 'ya', word: 'やま', emoji: '⛰️', meaning: '山' },
-    { hiragana: 'ゆ', katakana: 'ユ', romaji: 'yu', word: 'ゆき', emoji: '⛄', meaning: '雪' },
-    { hiragana: 'よ', katakana: 'ヨ', romaji: 'yo', word: 'よる', emoji: '🌃', meaning: '夜晚' },
-    
+    { hiragana: 'や', katakana: 'ヤ', romaji: 'ya', word: 'やまぐち', emoji: '🍟', meaning: '山口' },
+    { hiragana: 'ゆ', katakana: 'ユ', romaji: 'yu', word: 'ゆう', emoji: '🌩️', meaning: '夕(西谷)' },
+    { hiragana: 'よ', katakana: 'ヨ', romaji: 'yo', word: 'よる', emoji: '🌙', meaning: '夜' },
+
     // ら行
-    { hiragana: 'ら', katakana: 'ラ', romaji: 'ra', word: 'らっぱ', emoji: '🎺', meaning: '喇叭' },
-    { hiragana: 'り', katakana: 'リ', romaji: 'ri', word: 'りんご', emoji: '🍎', meaning: '蘋果' },
-    { hiragana: 'る', katakana: 'ル', romaji: 'ru', word: 'るすばん', emoji: '🏠', meaning: '看家' },
-    { hiragana: 'れ', katakana: 'レ', romaji: 're', word: 'れもん', emoji: '🍋', meaning: '檸檬' },
-    { hiragana: 'ろ', katakana: 'ロ', romaji: 'ro', word: 'ろうそく', emoji: '🕯️', meaning: '蠟燭' },
-    
+    { hiragana: 'ら', katakana: 'ラ', romaji: 'ra', word: 'らいばる', emoji: '🔥', meaning: '對手' },
+    { hiragana: 'り', katakana: 'リ', romaji: 'ri', word: 'りべろ', emoji: '🛡️', meaning: '自由球員' },
+    { hiragana: 'る', katakana: 'ル', romaji: 'ru', word: 'るーきー', emoji: '🌱', meaning: '新人' },
+    { hiragana: 'れ', katakana: 'レ', romaji: 're', word: 'れしーぶ', emoji: '👐', meaning: '接球' },
+    { hiragana: 'ろ', katakana: 'ロ', romaji: 'ro', word: 'ろーてーしょん', emoji: '🔄', meaning: '輪轉' },
+
     // わ行
-    { hiragana: 'わ', katakana: 'ワ', romaji: 'wa', word: 'わに', emoji: '🐊', meaning: '鱷魚' },
+    { hiragana: 'わ', katakana: 'ワ', romaji: 'wa', word: 'わしじょう', emoji: '🦅', meaning: '鷲匠' },
     { hiragana: 'を', katakana: 'ヲ', romaji: 'wo', word: 'を', emoji: '🪧', meaning: '助詞' },
     { hiragana: 'ん', katakana: 'ン', romaji: 'n', word: 'ん', emoji: '🔤', meaning: '撥音' }
 ];
