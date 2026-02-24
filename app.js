@@ -203,9 +203,9 @@ function showScreen(screenName) {
                         if (level === 4) btn.innerHTML = '⭐⭐⭐⭐ 決賽 (白鳥澤) - 2秒';
                     } else {
                         if (level === 1) btn.innerHTML = '⭐ 預賽 (扇南) - 1字(5秒)';
-                        if (level === 2) btn.innerHTML = '⭐⭐ 複賽 (和久谷南) - 2字(4秒)';
-                        if (level === 3) btn.innerHTML = '⭐⭐⭐ 準決賽 (青葉城西) - 3字(3秒)';
-                        if (level === 4) btn.innerHTML = '⭐⭐⭐⭐ 決賽 (白鳥澤) - 4字(2秒)';
+                        if (level === 2) btn.innerHTML = '⭐⭐ 複賽 (和久谷南) - 2字(5秒)';
+                        if (level === 3) btn.innerHTML = '⭐⭐⭐ 準決賽 (青葉城西) - 3字(5秒)';
+                        if (level === 4) btn.innerHTML = '⭐⭐⭐⭐ 決賽 (白鳥澤) - 4字(5秒)';
                     }
                 }
             });
@@ -695,7 +695,7 @@ function confirmCoinTossResult(isAttacking) {
 
 function startKanaMatchMatch() {
     const config = opponentConfig[kanaMatchState.currentLevel] || opponentConfig['1'];
-    kanaMatchState.maxTime = config.time * 1000;
+    kanaMatchState.maxTime = 5000; // 全部難度皆為 5 秒
     kanaMatchState.opponentScore = 0;
     kanaMatchState.playerScore = 0;
     kanaMatchState.deuceMode = false;
