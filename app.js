@@ -152,6 +152,25 @@ function showScreen(screenName) {
             ui.areaSound.classList.add('hidden');
             ui.displayTime.textContent = "00:00";
             ui.displayScore.textContent = "0";
+
+            // 處理關卡解鎖機制
+            const unlockLevel = parseInt(localStorage.getItem('kanagame_unlock_level')) || 1;
+            ui.soundDiffBtns.forEach(btn => {
+                const level = parseInt(btn.dataset.level);
+                if (level > unlockLevel) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.innerHTML = `🔒 關卡 ${level} (???)`;
+                } else {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    // 恢復原本的文字
+                    if (level === 1) btn.innerHTML = '⭐ 預賽 (扇南) - 5秒';
+                    if (level === 2) btn.innerHTML = '⭐⭐ 複賽 (和久谷南) - 4秒';
+                    if (level === 3) btn.innerHTML = '⭐⭐⭐ 準決賽 (青葉城西) - 3秒';
+                    if (level === 4) btn.innerHTML = '⭐⭐⭐⭐ 決賽 (白鳥澤) - 2秒';
+                }
+            });
         }
     }
 }
@@ -265,18 +284,35 @@ const volleyData = {
     playerScore: 0,
     targetKana: null,
     isAnimating: false,
-    deuceMode: false
+    deuceMode: false,
+    currentLevel: '1'
 };
 
 const opponentConfig = {
-    '1': { name: '扇南高校', time: 5 },
-    '2': { name: '和久谷南', time: 4 },
-    '3': { name: '青葉城西', time: 3 },
-    '4': { name: '白鳥澤', time: 2 }
+    '1': { name: '扇南高校', time: 5, players: ['十和田', '秋宮'], probHira: 1.0 },
+    '2': { name: '和久谷南', time: 4, players: ['中島', '川渡'], probHira: 0.75 },
+    '3': { name: '青葉城西', time: 3, players: ['及川', '岩泉', '金田一', '國見', '京谷', '花卷', '松川'], probHira: 0.5 },
+    '4': { name: '白鳥澤', time: 2, players: ['牛島', '天童', '五色', '白布', '大平', '瀨見', '山形'], probHira: 0.25 }
 };
+
+const karasunoPlayers = ['日向', '影山', '澤村', '菅原', '東峰', '西谷', '田中', '月島', '山口'];
+
+function getVolleyActionMessage(isSuccess) {
+    const config = opponentConfig[volleyData.currentLevel] || opponentConfig['1'];
+    const actions = ['扣球成功！', '防守成功！'];
+    const action = actions[Math.floor(Math.random() * actions.length)];
+    if (isSuccess) {
+        const player = karasunoPlayers[Math.floor(Math.random() * karasunoPlayers.length)];
+        return `${player} ${action}`;
+    } else {
+        const player = config.players[Math.floor(Math.random() * config.players.length)];
+        return `${player} ${action}`;
+    }
+}
 
 function startVolleyballMatch(difficultyLevel) {
     const config = opponentConfig[difficultyLevel] || opponentConfig['1'];
+    volleyData.currentLevel = difficultyLevel;
     volleyData.maxTime = config.time * 1000;
     volleyData.opponentScore = 0;
     volleyData.playerScore = 0;
@@ -310,11 +346,17 @@ function nextVolley() {
     ui.volleyTimerBar.style.width = '100%';
     ui.volleyTimerBar.className = 'timer-bar safe';
 
+    const config = opponentConfig[volleyData.currentLevel] || opponentConfig['1'];
+
     // 隨機抽選題目 (從清理過的資料集中)
     const randomKana = cleanedKanaData[Math.floor(Math.random() * cleanedKanaData.length)];
     volleyData.targetKana = randomKana;
 
-    ui.volleyQuestion.textContent = randomKana.hiragana;
+    // 依機率決定顯示平假名或片假名
+    const isHiragana = Math.random() < config.probHira;
+    const displayChar = isHiragana ? randomKana.hiragana : randomKana.katakana;
+
+    ui.volleyQuestion.textContent = displayChar;
     playAudio(randomKana.hiragana); // 唸出題目發音
 
     generateVolleyOptions(randomKana);
@@ -377,7 +419,7 @@ function onVolleyTimeout() {
         }
     });
 
-    showVolleyMessage('Time Out!', 'error');
+    showVolleyMessage(getVolleyActionMessage(false), 'error');
     volleyData.opponentScore++;
     updateVolleyballScoreboards();
 
@@ -395,7 +437,7 @@ function checkVolleyAnswer(selectedHiragana, btnElement) {
 
     if (isCorrect) {
         btnElement.style.backgroundColor = 'var(--success-color)';
-        showVolleyMessage('Nice Receive!', 'success');
+        showVolleyMessage(getVolleyActionMessage(true), 'success');
         addScore(50); // 遊戲總分 (排行榜用)
         volleyData.playerScore++;
     } else {
@@ -406,7 +448,7 @@ function checkVolleyAnswer(selectedHiragana, btnElement) {
                 b.style.backgroundColor = 'var(--success-color)';
             }
         });
-        showVolleyMessage('Miss!', 'error');
+        showVolleyMessage(getVolleyActionMessage(false), 'error');
         volleyData.opponentScore++;
     }
 
@@ -470,6 +512,13 @@ function endVolleyballMatch(winner) {
     if (winner === 'player') {
         showVolleyMessage('烏野高校 勝利！', 'success');
         addScore(1000); // 獲勝額外獎金分數
+
+        // 處理關卡解鎖進度
+        const currentUnlock = parseInt(localStorage.getItem('kanagame_unlock_level')) || 1;
+        const playedLevel = parseInt(volleyData.currentLevel);
+        if (playedLevel === currentUnlock && playedLevel < 4) {
+            localStorage.setItem('kanagame_unlock_level', (playedLevel + 1).toString());
+        }
     } else {
         showVolleyMessage('比賽結束...', 'error');
     }
