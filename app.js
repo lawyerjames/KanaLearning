@@ -352,22 +352,38 @@ function nextVolley() {
     const randomKana = cleanedKanaData[Math.floor(Math.random() * cleanedKanaData.length)];
     volleyData.targetKana = randomKana;
 
-    // 依機率決定顯示平假名或片假名
+    // 依機率決定顯示平假名或片假名 (控制難度比例)
     const isHiragana = Math.random() < config.probHira;
-    const displayChar = isHiragana ? randomKana.hiragana : randomKana.katakana;
+    let questionType = isHiragana ? 'hiragana' : 'katakana';
+    let displayChar = randomKana[questionType];
 
+    // 進階題型混合：偶爾將羅馬音作為題目
+    // 假設有 20% 機率題目是羅馬音 (可根據需求調整，或隨難度增加)
+    if (Math.random() < 0.2) {
+        questionType = 'romaji';
+        displayChar = randomKana.romaji;
+    }
+
+    volleyData.questionType = questionType; // 記錄題目類型，供選項產生時參考
     ui.volleyQuestion.textContent = displayChar;
     playAudio(randomKana.hiragana); // 唸出題目發音
 
-    generateVolleyOptions(randomKana);
+    generateVolleyOptions(randomKana, questionType);
 
     // 開始計時
     volleyData.timeLeft = volleyData.maxTime;
     volleyData.timer = setInterval(updateVolleyTimer, 50);
 }
 
-function generateVolleyOptions(targetData) {
+function generateVolleyOptions(targetData, questionType) {
     ui.soundOptionsContainer.innerHTML = '';
+
+    // 決定選項的文字類型 (必須與題目不同)
+    const availableOptionTypes = ['hiragana', 'katakana', 'romaji'].filter(t => t !== questionType);
+    // 隨機選一種作為這題的選項類型
+    const answerType = availableOptionTypes[Math.floor(Math.random() * availableOptionTypes.length)];
+
+    volleyData.answerType = answerType; // 記錄選項類型，後續驗證用
 
     const options = [targetData];
     let pool = [...cleanedKanaData].filter(k => k.hiragana !== targetData.hiragana);
@@ -378,7 +394,10 @@ function generateVolleyOptions(targetData) {
     options.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
-        btn.textContent = opt.romaji; // 選項顯示羅馬音
+        btn.textContent = opt[answerType]; // 根據決定的類型顯示文字
+
+        // 為了避免出現有些片假名/平假名長一樣的狀況，如果在片假名字體大小會不一樣，這裡統一用CSS確保。
+        // （現有CSS已經很大，不影響）
 
         btn.addEventListener('click', () => checkVolleyAnswer(opt.hiragana, btn));
         ui.soundOptionsContainer.appendChild(btn);
@@ -412,9 +431,11 @@ function onVolleyTimeout() {
 
     // 找出正確解答按鈕並標示
     const btns = ui.soundOptionsContainer.querySelectorAll('.option-btn');
+    const correctText = volleyData.targetKana[volleyData.answerType];
+
     btns.forEach(b => {
         b.disabled = true;
-        if (b.textContent === volleyData.targetKana.romaji) {
+        if (b.textContent === correctText) {
             b.style.backgroundColor = 'var(--success-color)';
         }
     });
@@ -442,9 +463,11 @@ function checkVolleyAnswer(selectedHiragana, btnElement) {
         volleyData.playerScore++;
     } else {
         btnElement.style.backgroundColor = 'var(--error-color)';
+
         // 標示正確答案
+        const correctText = volleyData.targetKana[volleyData.answerType];
         btns.forEach(b => {
-            if (b.textContent === volleyData.targetKana.romaji) {
+            if (b.textContent === correctText) {
                 b.style.backgroundColor = 'var(--success-color)';
             }
         });
