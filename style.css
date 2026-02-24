@@ -388,8 +388,10 @@ header {
   align-items: center;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   border: 4px solid var(--accent-color);
+  position: absolute;
+  top: -55px;
+  /* 移到原本上方的時間條位置 */
   z-index: 2;
-  margin-top: 15px;
 }
 
 .volley-hint {
@@ -400,8 +402,8 @@ header {
   padding: 4px 12px;
   border-radius: 10px;
   position: absolute;
-  top: -45px;
-  /* 再往上移動一點 */
+  top: -95px;
+  /* 再往上移避免擋住按鈕與題目 */
   white-space: nowrap;
   pointer-events: none;
   z-index: 15;
@@ -427,8 +429,8 @@ header {
   color: #FF5722;
   text-shadow: 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white;
   position: absolute;
-  bottom: -45px;
-  /* 往下移動以避免擋住題目球 */
+  top: 40px;
+  /* 移到題目球的下方 */
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s;
@@ -483,6 +485,51 @@ header {
   background-color: rgba(255, 255, 255, 0.5);
   border-radius: 5px;
   overflow: hidden;
+}
+
+.court-bottom-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  gap: 15px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+
+.bottom-timer.timer-bar-container {
+  position: relative;
+  top: 0;
+  width: 100%;
+  flex: 1;
+}
+
+.btn-pause {
+  background-color: #607D8B;
+  color: white;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-pause:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn-pause:disabled {
+  background-color: #9E9E9E;
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .timer-bar {

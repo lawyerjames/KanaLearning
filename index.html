@@ -80,10 +80,8 @@
 
                     <!-- 球網 / 題目區 (中) -->
                     <div class="net-area">
-                        <div class="timer-bar-container">
-                            <div class="timer-bar" id="volley-timer"></div>
-                        </div>
                         <div class="volley-hint" id="volley-hint"></div>
+                        <!-- 排球題目移到更上方 (透過 CSS 調整) -->
                         <div class="volley-question" id="volley-question">?</div>
                         <div class="volley-message" id="volley-message">READY</div>
                     </div>
@@ -93,6 +91,14 @@
                         <div class="scoreboard player-board">
                             <div class="team-name">烏野高校</div>
                             <div class="score-number" id="player-score-val">0</div>
+                        </div>
+                    </div>
+
+                    <!-- 時間條移到球場下方 -->
+                    <div class="court-bottom-controls">
+                        <button class="btn btn-pause" id="btn-pause-sound">⏸ 暫停 (2)</button>
+                        <div class="timer-bar-container bottom-timer">
+                            <div class="timer-bar" id="volley-timer"></div>
                         </div>
                     </div>
                 </div>
@@ -130,9 +136,6 @@
 
                     <!-- 球網 / 題目區 (中) -->
                     <div class="net-area">
-                        <div class="timer-bar-container">
-                            <div class="timer-bar" id="kana-volley-timer"></div>
-                        </div>
                         <div class="volley-hint" id="kana-volley-hint"></div>
                         <!-- 文字較長時會自動適應 -->
                         <div class="volley-question kana-question-display" id="kana-volley-question">?</div>
@@ -147,6 +150,14 @@
                         </div>
                         <div class="kana-input-area" id="kana-input-area">
                             <!-- JS 動態生成填寫框 -->
+                        </div>
+                    </div>
+
+                    <!-- 時間條移到球場下方 -->
+                    <div class="court-bottom-controls">
+                        <button class="btn btn-pause" id="btn-pause-kana">⏸ 暫停 (2)</button>
+                        <div class="timer-bar-container bottom-timer">
+                            <div class="timer-bar" id="kana-volley-timer"></div>
                         </div>
                     </div>
                 </div>
