@@ -329,10 +329,10 @@ const volleyData = {
 };
 
 const opponentConfig = {
-    '1': { name: '扇南高校', time: 5, players: ['十和田', '秋宮'], probHira: 1.0 },
-    '2': { name: '和久谷南', time: 4, players: ['中島', '川渡'], probHira: 0.75 },
-    '3': { name: '青葉城西', time: 3, players: ['及川', '岩泉', '金田一', '國見', '京谷', '花卷', '松川'], probHira: 0.5 },
-    '4': { name: '白鳥澤', time: 2, players: ['牛島', '天童', '五色', '白布', '大平', '瀨見', '山形'], probHira: 0.25 }
+    '1': { name: '扇南高校', time: 6, players: ['十和田', '秋宮'], probHira: 1.0 },
+    '2': { name: '和久谷南', time: 6, players: ['中島', '川渡'], probHira: 0.75 },
+    '3': { name: '青葉城西', time: 6, players: ['及川', '岩泉', '金田一', '國見', '京谷', '花卷', '松川'], probHira: 0.5 },
+    '4': { name: '白鳥澤', time: 6, players: ['牛島', '天童', '五色', '白布', '大平', '瀨見', '山形'], probHira: 0.25 }
 };
 
 const karasunoPlayers = ['日向', '影山', '澤村', '菅原', '東峰', '西谷', '田中', '月島', '山口'];
@@ -695,7 +695,7 @@ function confirmCoinTossResult(isAttacking) {
 
 function startKanaMatchMatch() {
     const config = opponentConfig[kanaMatchState.currentLevel] || opponentConfig['1'];
-    kanaMatchState.maxTime = 5000; // 全部難度皆為 5 秒
+    kanaMatchState.maxTime = 6000; // 全部難度皆放寬為 6 秒
     kanaMatchState.opponentScore = 0;
     kanaMatchState.playerScore = 0;
     kanaMatchState.deuceMode = false;
@@ -833,7 +833,7 @@ function generateKanaOptions(targetArray, answerType) {
         optionsMap.set(k[answerType], k);
     });
 
-    const totalOptions = targetArray.length > 2 ? targetArray.length + 3 : 4;
+    const totalOptions = 4; // 選項固定為四個
     let pool = [...cleanedKanaData];
     pool.sort(() => 0.5 - Math.random());
 
