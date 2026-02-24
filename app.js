@@ -352,38 +352,45 @@ function nextVolley() {
     const randomKana = cleanedKanaData[Math.floor(Math.random() * cleanedKanaData.length)];
     volleyData.targetKana = randomKana;
 
-    // 依機率決定顯示平假名或片假名 (控制難度比例)
-    const isHiragana = Math.random() < config.probHira;
-    let questionType = isHiragana ? 'hiragana' : 'katakana';
-    let displayChar = randomKana[questionType];
+    // 先決定這球主要是考平假名還是片假名 (控制難度的比例)
+    const isHiraganaPrimary = Math.random() < config.probHira;
+    const primaryType = isHiraganaPrimary ? 'hiragana' : 'katakana';
 
-    // 進階題型混合：偶爾將羅馬音作為題目
-    // 假設有 20% 機率題目是羅馬音 (可根據需求調整，或隨難度增加)
-    if (Math.random() < 0.2) {
-        questionType = 'romaji';
-        displayChar = randomKana.romaji;
+    // 決定可以用來配對的第二種語言 (羅馬音永遠可以，片假名只在非預賽且這題主角不是片假名時可能出現)
+    let possibleSecondaryTypes = ['romaji'];
+    if (primaryType === 'katakana') {
+        possibleSecondaryTypes.push('hiragana');
+    } else if (primaryType === 'hiragana' && config.probHira < 1.0) {
+        possibleSecondaryTypes.push('katakana');
+    }
+    const secondaryType = possibleSecondaryTypes[Math.floor(Math.random() * possibleSecondaryTypes.length)];
+
+    // 決定誰當題目、誰當選項
+    let questionType, answerType;
+    if (Math.random() < 0.5) {
+        questionType = primaryType;
+        answerType = secondaryType;
+    } else {
+        questionType = secondaryType;
+        answerType = primaryType;
     }
 
-    volleyData.questionType = questionType; // 記錄題目類型，供選項產生時參考
-    ui.volleyQuestion.textContent = displayChar;
+    volleyData.questionType = questionType;
+    volleyData.answerType = answerType; // 記錄選項類型，後續驗證用
+
+    ui.volleyQuestion.textContent = randomKana[questionType];
     playAudio(randomKana.hiragana); // 唸出題目發音
 
-    generateVolleyOptions(randomKana, questionType);
+    generateVolleyOptions(randomKana);
 
     // 開始計時
     volleyData.timeLeft = volleyData.maxTime;
     volleyData.timer = setInterval(updateVolleyTimer, 50);
 }
 
-function generateVolleyOptions(targetData, questionType) {
+function generateVolleyOptions(targetData) {
     ui.soundOptionsContainer.innerHTML = '';
-
-    // 決定選項的文字類型 (必須與題目不同)
-    const availableOptionTypes = ['hiragana', 'katakana', 'romaji'].filter(t => t !== questionType);
-    // 隨機選一種作為這題的選項類型
-    const answerType = availableOptionTypes[Math.floor(Math.random() * availableOptionTypes.length)];
-
-    volleyData.answerType = answerType; // 記錄選項類型，後續驗證用
+    const answerType = volleyData.answerType;
 
     const options = [targetData];
     let pool = [...cleanedKanaData].filter(k => k.hiragana !== targetData.hiragana);
