@@ -87,7 +87,7 @@ const cleanedKanaData = kanaData.filter((item, index, self) =>
     index === self.findIndex((t) => t.hiragana === item.hiragana)
 );
 
-// 新增：排球少年專屬單字庫 (供平片假名配對模式使用)
+// 新增：排球少年專屬單字庫 (包含排球術語、角色名、學校名等)
 const haikyuuWords = {
     '2': [
         { hiragana: 'とす', katakana: 'トス', meaning: '托球' },
@@ -99,7 +99,9 @@ const haikyuuWords = {
         { hiragana: 'みや', katakana: 'ミヤ', meaning: '宮(兄弟)' },
         { hiragana: 'なつ', katakana: 'ナツ', meaning: '夏(日向妹)' },
         { hiragana: 'やく', katakana: 'ヤク', meaning: '夜久' },
-        { hiragana: 'わし', katakana: 'ワシ', meaning: '鷲(鷲匠)' }
+        { hiragana: 'わし', katakana: 'ワシ', meaning: '鷲(鷲匠)' },
+        { hiragana: 'とべ', katakana: 'トベ', meaning: '飛吧(標語)' },
+        { hiragana: 'ぱす', katakana: 'パス', meaning: '傳球' }
     ],
     '3': [
         { hiragana: 'ひなた', katakana: 'ヒナタ', meaning: '日向' },
@@ -112,7 +114,12 @@ const haikyuuWords = {
         { hiragana: 'ごしき', katakana: 'ゴシキ', meaning: '五色' },
         { hiragana: 'りべろ', katakana: 'リベロ', meaning: '自由球員' },
         { hiragana: 'からす', katakana: 'カラス', meaning: '烏' },
-        { hiragana: 'ふくろ', katakana: 'フクロ', meaning: '梟' }
+        { hiragana: 'ふくろ', katakana: 'フクロ', meaning: '梟' },
+        { hiragana: 'さーぶ', katakana: 'サーブ', meaning: '發球' },
+        { hiragana: 'えーす', katakana: 'エース', meaning: '王牌' },
+        { hiragana: 'こーち', katakana: 'コーチ', meaning: '教練' },
+        { hiragana: 'ちーむ', katakana: 'チーム', meaning: '隊伍' },
+        { hiragana: 'でこい', katakana: 'デコイ', meaning: '誘餌' }
     ],
     '4': [
         { hiragana: 'かげやま', katakana: 'カゲヤマ', meaning: '影山' },
@@ -124,6 +131,13 @@ const haikyuuWords = {
         { hiragana: 'にしのや', katakana: 'ニシノヤ', meaning: '西谷' },
         { hiragana: 'あかあし', katakana: 'アカアシ', meaning: '赤葦' },
         { hiragana: 'もりすけ', katakana: 'モリスケ', meaning: '衛輔' },
-        { hiragana: 'しらとり', katakana: 'シラトリ', meaning: '白鳥' }
+        { hiragana: 'しらとり', katakana: 'シラトリ', meaning: '白鳥' },
+        { hiragana: 'すぱいく', katakana: 'スパイク', meaning: '扣球' },
+        { hiragana: 'あたっく', katakana: 'アタック', meaning: '攻擊' },
+        { hiragana: 'れしーぶ', katakana: 'レシーブ', meaning: '接球' },
+        { hiragana: 'ぶろっく', katakana: 'ブロック', meaning: '攔網' },
+        { hiragana: 'せったー', katakana: 'セッター', meaning: '舉球員' },
+        { hiragana: 'かんとく', katakana: 'カントク', meaning: '總教練' },
+        { hiragana: 'だんまく', katakana: 'ダンマク', meaning: '橫幅標語' }
     ]
 };

@@ -507,28 +507,6 @@ header {
   flex: 1;
 }
 
-.btn-pause {
-  background-color: #607D8B;
-  color: white;
-  padding: 5px 10px;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  flex-shrink: 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.btn-pause:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.btn-pause:disabled {
-  background-color: #9E9E9E;
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
 .timer-bar {
   height: 100%;
   width: 100%;

@@ -32,7 +32,6 @@ const ui = {
     volleyMessage: document.getElementById('volley-message'),
     volleyTimerBar: document.getElementById('volley-timer'),
     soundOptionsContainer: document.getElementById('sound-options-container'),
-    btnPauseSound: document.getElementById('btn-pause-sound'),
 
     areaKana: document.getElementById('game-area-kana'),
     kanaDiffSelector: document.getElementById('kana-difficulty-selector'),
@@ -45,7 +44,6 @@ const ui = {
     kanaVolleyTimerBar: document.getElementById('kana-volley-timer'),
     kanaOptionsContainer: document.getElementById('kana-options-container'),
     kanaInputArea: document.getElementById('kana-input-area'),
-    btnPauseKana: document.getElementById('btn-pause-kana'),
 
     areaBlanks: document.getElementById('game-area-blanks'),
     gojuonGrid: document.getElementById('gojuon-grid'),
@@ -138,10 +136,6 @@ function init() {
             renderLeaderboard(e.target.dataset.board);
         });
     });
-
-    // 暫停按鈕
-    if (ui.btnPauseSound) ui.btnPauseSound.addEventListener('click', handlePauseSound);
-    if (ui.btnPauseKana) ui.btnPauseKana.addEventListener('click', handlePauseKana);
 }
 
 // --- 畫面控制 ---
@@ -331,10 +325,7 @@ const volleyData = {
     targetKana: null,
     isAnimating: false,
     deuceMode: false,
-    currentLevel: '1',
-    pausesLeft: 2,
-    isPaused: false,
-    pauseTimer: null
+    currentLevel: '1'
 };
 
 const opponentConfig = {
@@ -367,16 +358,6 @@ function startVolleyballMatch(difficultyLevel) {
     volleyData.playerScore = 0;
     volleyData.deuceMode = false;
     volleyData.isAnimating = false;
-    volleyData.pausesLeft = 2;
-    volleyData.isPaused = false;
-    clearInterval(volleyData.pauseTimer);
-
-    if (ui.btnPauseSound) {
-        ui.btnPauseSound.textContent = '⏸ 暫停 (2)';
-        ui.btnPauseSound.disabled = false;
-        ui.btnPauseSound.className = 'btn btn-pause';
-        ui.btnPauseSound.style.backgroundColor = '#607D8B';
-    }
 
     ui.opponentName.textContent = config.name;
     updateVolleyballScoreboards();
@@ -527,7 +508,7 @@ function onVolleyTimeout() {
 }
 
 function checkVolleyAnswer(selectedHiragana, btnElement) {
-    if (volleyData.isAnimating || volleyData.isPaused) return;
+    if (volleyData.isAnimating) return;
     volleyData.isAnimating = true;
     clearInterval(volleyData.timer); // 停止計時
 
@@ -628,48 +609,6 @@ function endVolleyballMatch(winner) {
     setTimeout(endGame, 3000);
 }
 
-function handlePauseSound() {
-    if (volleyData.isPaused || volleyData.isAnimating || !gameState.isPlaying) return;
-    if (volleyData.pausesLeft <= 0) return;
-
-    volleyData.isPaused = true;
-    volleyData.pausesLeft--;
-    clearInterval(volleyData.timer);
-
-    let pauseSeconds = 30;
-    ui.btnPauseSound.textContent = `▶ 繼續 (${pauseSeconds}s)`;
-    ui.btnPauseSound.style.backgroundColor = '#FFC107';
-
-    volleyData.pauseTimer = setInterval(() => {
-        pauseSeconds--;
-        if (pauseSeconds <= 0) {
-            resumeSoundMatch();
-        } else {
-            ui.btnPauseSound.textContent = `▶ 繼續 (${pauseSeconds}s)`;
-        }
-    }, 1000);
-
-    ui.btnPauseSound.removeEventListener('click', handlePauseSound);
-    ui.btnPauseSound.addEventListener('click', resumeSoundMatch, { once: true });
-}
-
-function resumeSoundMatch() {
-    clearInterval(volleyData.pauseTimer);
-    volleyData.isPaused = false;
-    ui.btnPauseSound.textContent = `⏸ 暫停 (${volleyData.pausesLeft})`;
-    ui.btnPauseSound.style.backgroundColor = '#607D8B';
-
-    if (volleyData.pausesLeft <= 0) {
-        ui.btnPauseSound.disabled = true;
-    }
-
-    ui.btnPauseSound.addEventListener('click', handlePauseSound);
-
-    if (!volleyData.isAnimating && gameState.isPlaying) {
-        volleyData.timer = setInterval(updateVolleyTimer, 50);
-    }
-}
-
 // --- 遊戲邏輯：功能二 (平片假名配對 - 排球模式) ---
 const kanaMatchState = {
     timer: null,
@@ -761,16 +700,6 @@ function startKanaMatchMatch() {
     kanaMatchState.playerScore = 0;
     kanaMatchState.deuceMode = false;
     kanaMatchState.isAnimating = false;
-    kanaMatchState.pausesLeft = 2;
-    kanaMatchState.isPaused = false;
-    clearInterval(kanaMatchState.pauseTimer);
-
-    if (ui.btnPauseKana) {
-        ui.btnPauseKana.textContent = '⏸ 暫停 (2)';
-        ui.btnPauseKana.disabled = false;
-        ui.btnPauseKana.className = 'btn btn-pause';
-        ui.btnPauseKana.style.backgroundColor = '#607D8B';
-    }
 
     ui.kanaOpponentName.textContent = config.name;
     updateKanaScoreboards();
@@ -929,7 +858,7 @@ function generateKanaOptions(targetArray, answerType) {
 }
 
 function checkKanaAnswer(selectedText, btnElement) {
-    if (kanaMatchState.isAnimating || kanaMatchState.isPaused) return;
+    if (kanaMatchState.isAnimating) return;
 
     const currentIndex = kanaMatchState.currentIndex;
     const correctTarget = kanaMatchState.targetKanaArray[currentIndex];
@@ -1091,48 +1020,6 @@ function endKanaMatch(winner) {
     }
 
     setTimeout(endGame, 3000);
-}
-
-function handlePauseKana() {
-    if (kanaMatchState.isPaused || kanaMatchState.isAnimating || !gameState.isPlaying) return;
-    if (kanaMatchState.pausesLeft <= 0) return;
-
-    kanaMatchState.isPaused = true;
-    kanaMatchState.pausesLeft--;
-    clearInterval(kanaMatchState.timer);
-
-    let pauseSeconds = 30;
-    ui.btnPauseKana.textContent = `▶ 繼續 (${pauseSeconds}s)`;
-    ui.btnPauseKana.style.backgroundColor = '#FFC107';
-
-    kanaMatchState.pauseTimer = setInterval(() => {
-        pauseSeconds--;
-        if (pauseSeconds <= 0) {
-            resumeKanaMatch();
-        } else {
-            ui.btnPauseKana.textContent = `▶ 繼續 (${pauseSeconds}s)`;
-        }
-    }, 1000);
-
-    ui.btnPauseKana.removeEventListener('click', handlePauseKana);
-    ui.btnPauseKana.addEventListener('click', resumeKanaMatch, { once: true });
-}
-
-function resumeKanaMatch() {
-    clearInterval(kanaMatchState.pauseTimer);
-    kanaMatchState.isPaused = false;
-    ui.btnPauseKana.textContent = `⏸ 暫停 (${kanaMatchState.pausesLeft})`;
-    ui.btnPauseKana.style.backgroundColor = '#607D8B';
-
-    if (kanaMatchState.pausesLeft <= 0) {
-        ui.btnPauseKana.disabled = true;
-    }
-
-    ui.btnPauseKana.addEventListener('click', handlePauseKana);
-
-    if (!kanaMatchState.isAnimating && gameState.isPlaying) {
-        kanaMatchState.timer = setInterval(updateKanaTimer, 50);
-    }
 }
 
 // --- 遊戲邏輯：功能三 (五十音填空) ---
