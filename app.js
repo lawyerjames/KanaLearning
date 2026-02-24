@@ -236,7 +236,9 @@ function startGame(mode, difficulty = null) {
         ui.areaSound.classList.remove('hidden');
         startVolleyballMatch(difficulty);
     } else if (mode === 'match-kana') {
-        startKanaMatchGame();
+        ui.kanaDiffSelector.classList.add('hidden');
+        ui.areaKana.classList.remove('hidden');
+        showCoinToss(difficulty);
     }
 
     // 啟動計時器
