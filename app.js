@@ -439,18 +439,24 @@ function nextVolley() {
     volleyData.timeLeft = volleyData.maxTime;
     volleyData.timer = setInterval(updateVolleyTimer, 50);
 
-    // 顯示漢字/中文提示
+    // 顯示漢字/中文提示 (初期隱藏假名讀音)
     const hintElement = document.getElementById('volley-hint');
     if (hintElement) {
+        // 先將完整提示存為 data-attribute，之後答題後再顯示
+        let fullHint = '';
         if (randomKana.meaning && randomKana.word && randomKana.word !== randomKana.hiragana) {
-            hintElement.textContent = `${randomKana.meaning} (${randomKana.word})`;
+            fullHint = `${randomKana.meaning} (${randomKana.word})`;
+            hintElement.textContent = randomKana.meaning; // 遊戲進行中只顯示中文意思
             hintElement.style.display = 'block';
         } else if (randomKana.meaning) {
+            fullHint = randomKana.meaning;
             hintElement.textContent = randomKana.meaning;
             hintElement.style.display = 'block';
         } else {
+            fullHint = '';
             hintElement.style.display = 'none';
         }
+        hintElement.dataset.fullHint = fullHint;
     }
 }
 
@@ -513,6 +519,13 @@ function onVolleyTimeout() {
         }
     });
 
+    // 顯示完整提示
+    const hintElement = document.getElementById('volley-hint');
+    if (hintElement && hintElement.dataset.fullHint) {
+        hintElement.textContent = hintElement.dataset.fullHint;
+        hintElement.style.display = 'block';
+    }
+
     showVolleyMessage(getVolleyActionMessage(false), 'error');
     volleyData.opponentScore++;
     updateVolleyballScoreboards();
@@ -546,6 +559,13 @@ function checkVolleyAnswer(selectedHiragana, btnElement) {
         });
         showVolleyMessage(getVolleyActionMessage(false), 'error');
         volleyData.opponentScore++;
+    }
+
+    // 顯示完整提示
+    const hintElement = document.getElementById('volley-hint');
+    if (hintElement && hintElement.dataset.fullHint) {
+        hintElement.textContent = hintElement.dataset.fullHint;
+        hintElement.style.display = 'block';
     }
 
     updateVolleyballScoreboards();
