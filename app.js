@@ -116,7 +116,15 @@ function init() {
     });
 
     // 回主畫面
-    ui.btnHome.addEventListener('click', () => showScreen('home'));
+    ui.btnHome.addEventListener('click', () => {
+        if (gameState.isPlaying) {
+            if (confirm('是否要放棄比賽？')) {
+                showScreen('home');
+            }
+        } else {
+            showScreen('home');
+        }
+    });
     ui.btnBackHomeLb.addEventListener('click', () => showScreen('home'));
 
     // 彈窗「繼續」按鈕
