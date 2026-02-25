@@ -155,6 +155,9 @@ function showScreen(screenName) {
     // 停止遊戲與計時器
     stopTimer();
     gameState.isPlaying = false;
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
 
     // 顯示目標畫面
     const targetScreen = document.getElementById(`screen-${screenName}`);
