@@ -76,7 +76,14 @@ const ui = {
     // 排行榜
     leaderboardList: document.getElementById('leaderboard-list'),
     tabBtns: document.querySelectorAll('.tab-btn'),
-    btnBackHomeLb: document.getElementById('btn-back-home-lb')
+    btnBackHomeLb: document.getElementById('btn-back-home-lb'),
+
+    // 五十音表
+    chartModal: document.getElementById('chart-modal'),
+    btnShowChart: document.getElementById('btn-show-chart'),
+    btnCloseChart: document.getElementById('btn-close-chart'),
+    chartGrid: document.getElementById('chart-grid'),
+    chartToggleBtns: document.querySelectorAll('.btn-toggle')
 };
 
 // --- 初始化與事件綁定 ---
@@ -142,6 +149,95 @@ function init() {
             ui.tabBtns.forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             renderLeaderboard(e.target.dataset.board);
+        });
+    });
+
+    // 五十音表按鈕綁定
+    if (ui.btnShowChart) {
+        ui.btnShowChart.addEventListener('click', () => {
+            ui.chartModal.classList.remove('hidden');
+            renderChartGrid();
+        });
+    }
+    if (ui.btnCloseChart) {
+        ui.btnCloseChart.addEventListener('click', () => {
+            ui.chartModal.classList.add('hidden');
+        });
+    }
+    ui.chartToggleBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const type = e.target.dataset.toggle;
+            e.target.classList.toggle('active');
+            const isActive = e.target.classList.contains('active');
+
+            const elements = ui.chartGrid.querySelectorAll(`.chart-text-${type}`);
+            elements.forEach(el => {
+                el.style.opacity = isActive ? '1' : '0';
+            });
+        });
+    });
+}
+
+// --- 五十音表顯示 ---
+function renderChartGrid() {
+    if (ui.chartGrid.children.length > 0) return; // 避免重複渲染
+
+    ui.chartGrid.innerHTML = '';
+
+    // 建立表頭 (第一格留空，後面是五十音段)
+    const headers = ['', 'あ段', 'い段', 'う段', 'え段', 'お段'];
+    headers.forEach(h => {
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'chart-header-cell';
+        headerDiv.textContent = h;
+        ui.chartGrid.appendChild(headerDiv);
+    });
+
+    const rowsLabels = ['あ行', 'か行', 'さ行', 'た行', 'な行', 'は行', 'ま行', 'や行', 'ら行', 'わ行', 'ん行'];
+
+    gojuonGridLayout.forEach((row, rowIndex) => {
+        // 每列開頭加入行標題
+        const rowLabelDiv = document.createElement('div');
+        rowLabelDiv.className = 'chart-row-label-cell';
+        rowLabelDiv.textContent = rowsLabels[rowIndex];
+        ui.chartGrid.appendChild(rowLabelDiv);
+
+        row.forEach(char => {
+            const cell = document.createElement('div');
+            cell.className = 'chart-cell';
+
+            if (char === null) {
+                cell.classList.add('empty-cell');
+            } else {
+                const data = kanaData.find(k => k.hiragana === char);
+                if (data) {
+                    const hira = document.createElement('div');
+                    hira.className = 'chart-text-hiragana';
+                    hira.textContent = data.hiragana;
+
+                    const kata = document.createElement('div');
+                    kata.className = 'chart-text-katakana';
+                    kata.textContent = data.katakana;
+
+                    const rowContainer = document.createElement('div');
+                    rowContainer.className = 'chart-kana-row';
+                    rowContainer.appendChild(hira);
+                    rowContainer.appendChild(kata);
+
+                    const roma = document.createElement('div');
+                    roma.className = 'chart-text-romaji';
+                    roma.textContent = data.romaji;
+
+                    cell.appendChild(rowContainer);
+                    cell.appendChild(roma);
+
+                    // 加入點擊播放聲音
+                    cell.style.cursor = 'pointer';
+                    cell.addEventListener('click', () => playAudio(data.hiragana));
+                    cell.title = "點擊發音";
+                }
+            }
+            ui.chartGrid.appendChild(cell);
         });
     });
 }

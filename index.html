@@ -36,8 +36,10 @@
             <div class="cover-image-container">
                 <img src="cover.jpg" alt="Haikyuu TO THE TOP" class="cover-image">
             </div>
-            <h1 class="app-title"><span class="subtitle">決戰五十音</span></h1>
-
+            <div class="title-container" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <h1 class="app-title" style="margin-bottom: 0;"><span class="subtitle">決戰五十音</span></h1>
+                <button id="btn-show-chart" class="btn btn-chart" title="查看五十音表">あ/ア</button>
+            </div>
             <div class="menu-container">
                 <button class="btn btn-menu" data-target="screen-match-sound">
                     <span class="emoji">🎧</span> 讀音配對大考驗
@@ -256,6 +258,24 @@
                 <p id="coin-result-text" class="mb-3">你猜對了！請選擇：</p>
                 <button class="btn btn-primary action-btn" data-action="serve">先攻 (發球)</button>
                 <button class="btn btn-success action-btn" data-action="receive">先守 (接球)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 五十音表彈窗 -->
+    <div id="chart-modal" class="hidden chart-modal-overlay">
+        <div class="chart-card">
+            <button id="btn-close-chart" class="btn btn-icon close-btn" title="關閉">❌</button>
+            <h2 class="section-title" style="margin-top: 0;">五十音表</h2>
+            <div class="chart-controls">
+                <button class="btn btn-toggle active" data-toggle="hiragana">平假名</button>
+                <button class="btn btn-toggle active" data-toggle="katakana">片假名</button>
+                <button class="btn btn-toggle active" data-toggle="romaji">讀音</button>
+            </div>
+            <div class="chart-grid-container">
+                <div class="chart-grid" id="chart-grid">
+                    <!-- 表格由 JS 生成 -->
+                </div>
             </div>
         </div>
     </div>
