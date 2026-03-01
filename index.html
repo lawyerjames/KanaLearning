@@ -36,7 +36,8 @@
             <div class="cover-image-container">
                 <img src="cover.jpg" alt="Haikyuu TO THE TOP" class="cover-image">
             </div>
-            <div class="title-container" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+            <div class="title-container"
+                style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 2rem;">
                 <h1 class="app-title" style="margin-bottom: 0;"><span class="subtitle">決戰五十音</span></h1>
                 <button id="btn-show-chart" class="btn btn-chart" title="查看五十音表">あ/ア</button>
             </div>
@@ -179,6 +180,12 @@
                 <button class="btn btn-diff" data-level="hard">⭐⭐⭐ 挑戰 (完全空白)</button>
             </div>
             <div class="game-area hidden" id="game-area-blanks">
+                <div class="blanks-header">
+                    <div class="volley-message" id="blanks-message">READY</div>
+                    <div class="timer-bar-container blanks-timer-container">
+                        <div class="timer-bar" id="blanks-timer"></div>
+                    </div>
+                </div>
                 <div class="gojuon-grid" id="gojuon-grid">
                     <!-- 表格由 JS 生成 -->
                 </div>

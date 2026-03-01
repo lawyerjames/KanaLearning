@@ -220,11 +220,32 @@ header {
 /* 填空遊戲佈局 */
 .gojuon-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0.5rem;
   width: 100%;
-  max-width: 600px;
+  max-width: 650px;
   margin: 0 auto;
+}
+
+.blanks-header-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 900;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+.blanks-row-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 900;
+  color: var(--text-dark);
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  padding: 0.2rem;
 }
 
 /* 卡片與選項共通 */
@@ -232,11 +253,12 @@ header {
   background-color: var(--card-bg);
   border: 2px solid var(--secondary-color);
   border-radius: 12px;
-  padding: 1rem;
-  font-size: 2rem;
+  padding: 0.3rem;
+  font-size: 1.6rem;
   font-weight: 900;
   display: flex;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-around;
   align-items: center;
   cursor: pointer;
   box-shadow: 0 4px 6px var(--shadow-color);
@@ -268,6 +290,66 @@ header {
   background-color: #E9ECEF;
   color: transparent;
   border-style: dashed;
+}
+
+.char-slot {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border-radius: 6px;
+  font-size: 1.6rem;
+}
+
+.char-slot.active-blank {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+  animation: pulseBlank 1s infinite alternate;
+}
+
+@keyframes pulseBlank {
+  from {
+    background-color: var(--accent-color);
+  }
+
+  to {
+    background-color: #FFCBA4;
+    transform: scale(1.05);
+  }
+}
+
+.char-slot.matched {
+  color: var(--text-dark);
+}
+
+.char-slot.missing {
+  color: #ccc;
+  font-size: 1.5rem;
+}
+
+.blanks-header {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: relative;
+  height: 60px;
+}
+
+.blanks-timer-container {
+  position: relative;
+  top: 0;
+  width: 100%;
+  margin-top: 15px;
+}
+
+#blanks-message {
+  position: absolute;
+  top: -10px;
 }
 
 /* 填空選項區 */

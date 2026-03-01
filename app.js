@@ -49,6 +49,8 @@ const ui = {
     gojuonGrid: document.getElementById('gojuon-grid'),
     optionsContainer: document.getElementById('options-container'),
     diffSelector: document.getElementById('difficulty-selector'),
+    blanksMessage: document.getElementById('blanks-message'),
+    blanksTimerBar: document.getElementById('blanks-timer'),
 
     // 彈窗
     modalOverlay: document.getElementById('modal-overlay'),
@@ -1164,9 +1166,11 @@ function endKanaMatch(winner) {
 
 // --- 遊戲邏輯：功能三 (五十音填空) ---
 let blanksGameState = {
-    blanksLeft: 0,
+    hiddenItems: [],
     currentActiveBlank: null,
-    hiddenItems: [] // 記錄被挖空的字
+    timer: null,
+    timeLeft: 0,
+    maxTime: 4000
 };
 
 function startFillBlanksGame(difficulty) {
@@ -1174,145 +1178,255 @@ function startFillBlanksGame(difficulty) {
     ui.optionsContainer.innerHTML = '';
     ui.optionsContainer.classList.add('hidden');
     blanksGameState.hiddenItems = [];
-    blanksGameState.blanksLeft = 0;
+    blanksGameState.currentActiveBlank = null;
+    clearInterval(blanksGameState.timer);
 
-    // 將版面設為 5 欄 (あいうえお)
-    ui.gojuonGrid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+    if (ui.blanksMessage) ui.blanksMessage.classList.remove('show');
+    if (ui.blanksTimerBar) {
+        ui.blanksTimerBar.style.width = '100%';
+        ui.blanksTimerBar.className = 'timer-bar safe';
+    }
 
-    // 計算總共有多少有效的字 (非 null)
-    const validKanaCount = gojuonGridLayout.flat().filter(k => k !== null).length; // 46 個字
+    ui.gojuonGrid.style.gridTemplateColumns = 'repeat(6, 1fr)';
 
-    // 決定要挖空幾個字
+    let allPossibleItems = [];
+    gojuonGridLayout.flat().forEach(k => {
+        if (k !== null) {
+            allPossibleItems.push({ kanaStr: k, type: 'hiragana' });
+            allPossibleItems.push({ kanaStr: k, type: 'katakana' });
+        }
+    });
+
     let numToHide = 0;
-    if (difficulty === 'easy') numToHide = Math.floor(validKanaCount * 0.25); // 隱藏 1/4 (簡單)
-    else if (difficulty === 'medium') numToHide = Math.floor(validKanaCount * 0.5); // 隱藏 1/2 (中等)
-    else if (difficulty === 'hard') numToHide = validKanaCount; // 全部隱藏 (困難)
+    if (difficulty === 'easy') numToHide = Math.floor(allPossibleItems.length * 0.25);
+    else if (difficulty === 'medium') numToHide = Math.floor(allPossibleItems.length * 0.5);
+    else if (difficulty === 'hard') numToHide = allPossibleItems.length;
 
-    // 從 valid kana 中選出要挖空的字
-    let validKanaList = gojuonGridLayout.flat().filter(k => k !== null);
-    validKanaList.sort(() => 0.5 - Math.random());
-    const kanaToHide = new Set(validKanaList.slice(0, numToHide));
+    allPossibleItems.sort(() => 0.5 - Math.random());
+    const hiddenItemsSet = new Set(allPossibleItems.slice(0, numToHide).map(item => item.kanaStr + '_' + item.type));
 
-    blanksGameState.blanksLeft = numToHide;
+    const headers = ['', 'あ段', 'い段', 'う段', 'え段', 'お段'];
+    headers.forEach(h => {
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'blanks-header-cell';
+        headerDiv.textContent = h;
+        ui.gojuonGrid.appendChild(headerDiv);
+    });
 
-    // 渲染表格
+    const rowsLabels = ['あ行', 'か行', 'さ行', 'た行', 'な行', 'は行', 'ま行', 'や行', 'ら行', 'わ行', 'ん行'];
+
     gojuonGridLayout.forEach((row, rowIndex) => {
+        const rowLabelDiv = document.createElement('div');
+        rowLabelDiv.className = 'blanks-row-label';
+        rowLabelDiv.textContent = rowsLabels[rowIndex];
+        ui.gojuonGrid.appendChild(rowLabelDiv);
+
         row.forEach((kanaStr, colIndex) => {
             const cell = document.createElement('div');
             cell.className = 'kana-card';
 
             if (kanaStr === null) {
-                // 空格 (如 や行、わ行 缺少的字) 不可點擊
                 cell.classList.add('empty');
                 cell.innerHTML = '';
                 ui.gojuonGrid.appendChild(cell);
                 return;
             }
 
-            // 找到對應的物件以取得完整資料
             const kObj = cleanedKanaData.find(k => k.hiragana === kanaStr);
-            if (!kObj) {
-                console.error('Data missing for:', kanaStr);
-            }
-
             cell.dataset.id = kanaStr;
-            cell.dataset.romaji = kObj ? kObj.romaji : '';
 
-            if (kanaToHide.has(kanaStr)) {
-                // 這個字被挖空，顯示 ? 或空白，可點擊
-                cell.innerHTML = '❓';
-                cell.classList.add('blank-cell');
-                blanksGameState.hiddenItems.push(kanaStr);
-
-                cell.addEventListener('click', () => handleBlankClick(cell, kanaStr));
+            const hiraDiv = document.createElement('div');
+            hiraDiv.className = 'char-slot hira-slot';
+            hiraDiv.id = `slot-${kanaStr}-hiragana`;
+            if (hiddenItemsSet.has(kanaStr + '_hiragana')) {
+                hiraDiv.textContent = '❓';
+                hiraDiv.classList.add('missing');
+                blanksGameState.hiddenItems.push({ kanaStr, type: 'hiragana', kObj });
             } else {
-                // 保留顯示的字，不能點擊
-                cell.innerHTML = kanaStr;
-                cell.classList.add('matched'); // 用 matched 樣式表示不可再填寫
+                hiraDiv.textContent = kObj.hiragana;
+                hiraDiv.classList.add('matched');
             }
 
+            const kataDiv = document.createElement('div');
+            kataDiv.className = 'char-slot kata-slot';
+            kataDiv.id = `slot-${kanaStr}-katakana`;
+            if (hiddenItemsSet.has(kanaStr + '_katakana')) {
+                kataDiv.textContent = '❓';
+                kataDiv.classList.add('missing');
+                blanksGameState.hiddenItems.push({ kanaStr, type: 'katakana', kObj });
+            } else {
+                kataDiv.textContent = kObj.katakana;
+                kataDiv.classList.add('matched');
+            }
+
+            cell.appendChild(hiraDiv);
+            cell.appendChild(kataDiv);
             ui.gojuonGrid.appendChild(cell);
         });
     });
+
+    // 啟動主計時器以記錄總耗時
+    startTimer();
+
+    setTimeout(() => {
+        nextRandomBlank();
+    }, 1000);
 }
 
-function handleBlankClick(cellElement, targetKana) {
-    if (cellElement.classList.contains('matched')) return; // 已填答正確
+function nextRandomBlank() {
+    ui.optionsContainer.innerHTML = '';
+    ui.optionsContainer.classList.add('hidden');
+    clearInterval(blanksGameState.timer);
 
-    // 移除之前的選取狀態
-    if (blanksGameState.currentActiveBlank) {
-        blanksGameState.currentActiveBlank.el.classList.remove('selected');
+    if (ui.blanksTimerBar) {
+        ui.blanksTimerBar.style.width = '100%';
+        ui.blanksTimerBar.className = 'timer-bar safe';
     }
 
-    cellElement.classList.add('selected');
-    blanksGameState.currentActiveBlank = { el: cellElement, target: targetKana };
+    if (blanksGameState.currentActiveBlank) {
+        const prevId = `slot-${blanksGameState.currentActiveBlank.kanaStr}-${blanksGameState.currentActiveBlank.type}`;
+        const prevEl = document.getElementById(prevId);
+        if (prevEl) prevEl.classList.remove('active-blank');
+        blanksGameState.currentActiveBlank = null;
+    }
 
-    // 顯示下方選項
-    generateOptions(targetKana);
+    if (blanksGameState.hiddenItems.length === 0) {
+        showBlanksMessage('恭喜完成！', 'success');
+        setTimeout(endGame, 1500);
+        return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * blanksGameState.hiddenItems.length);
+    const targetItem = blanksGameState.hiddenItems[randomIndex];
+    blanksGameState.currentActiveBlank = targetItem;
+
+    const elId = `slot-${targetItem.kanaStr}-${targetItem.type}`;
+    const el = document.getElementById(elId);
+    if (el) {
+        el.classList.add('active-blank');
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    generateBlanksOptions(targetItem);
+
+    playAudio(targetItem.kanaStr);
+    const typeLabel = targetItem.type === 'hiragana' ? '平假名' : '片假名';
+    showBlanksMessage(`找出對應的${typeLabel}！`, 'warning');
+
+    blanksGameState.timeLeft = blanksGameState.maxTime;
+    blanksGameState.timer = setInterval(updateBlanksTimer, 50);
 }
 
-function generateOptions(targetKana) {
+function generateBlanksOptions(targetItem) {
     ui.optionsContainer.innerHTML = '';
     ui.optionsContainer.classList.remove('hidden');
 
-    // 選出正確解答
-    const options = [targetKana];
+    const type = targetItem.type;
+    const correctAns = targetItem.kObj[type];
 
-    // 產生 3 個錯誤解答 (從未被填答的隱藏假名或全資料隨機選)
-    let pool = [...cleanedKanaData.map(k => k.hiragana)].filter(k => k !== targetKana);
+    const optionsMap = new Map();
+    optionsMap.set(correctAns, targetItem.kObj);
+
+    let pool = [...cleanedKanaData];
     pool.sort(() => 0.5 - Math.random());
 
-    options.push(...pool.slice(0, 3));
+    for (let i = 0; i < pool.length && optionsMap.size < 4; i++) {
+        const k = pool[i];
+        if (!optionsMap.has(k[type])) {
+            optionsMap.set(k[type], k);
+        }
+    }
 
-    // 打亂選項順序
+    const options = Array.from(optionsMap.values());
     options.sort(() => 0.5 - Math.random());
 
     options.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
-        btn.textContent = opt;
+        btn.textContent = opt[type];
 
-        btn.addEventListener('click', () => checkAnswer(opt));
+        btn.addEventListener('click', () => checkBlanksAnswer(opt[type], btn));
         ui.optionsContainer.appendChild(btn);
     });
 }
 
-function checkAnswer(selectedKana) {
-    const activeData = blanksGameState.currentActiveBlank;
-    if (!activeData) return;
+function updateBlanksTimer() {
+    blanksGameState.timeLeft -= 50;
+    if (blanksGameState.timeLeft < 0) blanksGameState.timeLeft = 0;
+    const percentage = (blanksGameState.timeLeft / blanksGameState.maxTime) * 100;
 
-    const target = activeData.target;
-    const cell = activeData.el;
+    if (ui.blanksTimerBar) {
+        ui.blanksTimerBar.style.width = percentage + '%';
+        if (percentage <= 0) {
+            clearInterval(blanksGameState.timer);
+            onBlanksTimeout();
+            return;
+        }
 
-    if (selectedKana === target) {
-        // 答對了！
-        playAudio(target); // 念出這個假名
+        if (percentage < 30) {
+            ui.blanksTimerBar.className = 'timer-bar danger';
+        } else if (percentage < 60) {
+            ui.blanksTimerBar.className = 'timer-bar warning';
+        } else {
+            ui.blanksTimerBar.className = 'timer-bar safe';
+        }
+    }
+}
+
+function onBlanksTimeout() {
+    const btns = ui.optionsContainer.querySelectorAll('.option-btn');
+    btns.forEach(b => b.disabled = true);
+
+    addScore(-25);
+    showBlanksMessage('時間到！扣 25 分', 'error');
+
+    setTimeout(nextRandomBlank, 1500);
+}
+
+function checkBlanksAnswer(selectedOpt, btnElement) {
+    clearInterval(blanksGameState.timer);
+    const btns = ui.optionsContainer.querySelectorAll('.option-btn');
+    btns.forEach(b => b.disabled = true);
+
+    const targetItem = blanksGameState.currentActiveBlank;
+    const correctAns = targetItem.kObj[targetItem.type];
+
+    if (selectedOpt === correctAns) {
+        btnElement.style.backgroundColor = 'var(--success-color)';
+        showBlanksMessage('答對了！+50 分', 'success');
         addScore(50);
 
-        cell.innerHTML = target;
-        cell.classList.remove('selected', 'blank-cell');
-        cell.classList.add('matched');
-
-        ui.optionsContainer.innerHTML = ''; // 清除選項
-        ui.optionsContainer.classList.add('hidden');
-        blanksGameState.currentActiveBlank = null;
-
-        blanksGameState.blanksLeft--;
-
-        if (blanksGameState.blanksLeft === 0) {
-            setTimeout(endGame, 1000);
+        const elId = `slot-${targetItem.kanaStr}-${targetItem.type}`;
+        const el = document.getElementById(elId);
+        if (el) {
+            el.textContent = correctAns;
+            el.classList.remove('missing', 'active-blank');
+            el.classList.add('matched');
         }
+
+        blanksGameState.hiddenItems = blanksGameState.hiddenItems.filter(
+            item => !(item.kanaStr === targetItem.kanaStr && item.type === targetItem.type)
+        );
+
+        setTimeout(nextRandomBlank, 1000);
     } else {
-        // 答錯，稍微抖動格子並扣分
-        cell.style.transform = 'translateX(-5px)';
-        setTimeout(() => cell.style.transform = 'translateX(5px)', 100);
-        setTimeout(() => cell.style.transform = 'scale(1.1)', 200); // 回復選取狀態的 scale
+        btnElement.style.backgroundColor = 'var(--error-color)';
+        showBlanksMessage('答錯了！扣 25 分', 'error');
+        addScore(-25);
 
-        if (gameState.score > 0) addScore(-5);
-
-        // 錯誤音效 (可用語音提示)
-        // playAudio('ちがうよ'); 
+        setTimeout(nextRandomBlank, 1500);
     }
+}
+
+function showBlanksMessage(msg, type) {
+    if (!ui.blanksMessage) return;
+    ui.blanksMessage.textContent = msg;
+    ui.blanksMessage.style.color = type === 'success' ? '#4CAF50' : '#FF5722';
+    if (type === 'warning') ui.blanksMessage.style.color = '#FFC107';
+
+    ui.blanksMessage.classList.remove('show');
+    void ui.blanksMessage.offsetWidth;
+    ui.blanksMessage.classList.add('show');
 }
 
 // --- 排行榜 (LocalStorage) ---
