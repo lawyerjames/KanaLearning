@@ -15,9 +15,11 @@
 </head>
 
 <body>
-    <!-- 頂部資訊列：計時與得分 (選單頁面隱藏) -->
     <header id="game-header" class="hidden">
-        <button id="btn-home" class="btn btn-icon" title="回主選單">🏠</button>
+        <div style="display: flex; gap: 10px;">
+            <button id="btn-home" class="btn btn-icon" title="回主選單">🏠</button>
+            <button id="btn-volume" class="btn btn-icon" title="切換音量">🔊</button>
+        </div>
         <div class="stats-container">
             <div class="stat-box timer-box">
                 <span class="icon">⏱️</span>
@@ -182,16 +184,18 @@
             <div class="game-area hidden" id="game-area-blanks">
                 <div class="blanks-header">
                     <div class="volley-message" id="blanks-message">READY</div>
-                    <div class="timer-bar-container blanks-timer-container">
-                        <div class="timer-bar" id="blanks-timer"></div>
-                    </div>
                 </div>
                 <div class="gojuon-grid" id="gojuon-grid">
                     <!-- 表格由 JS 生成 -->
                 </div>
-                <!-- 填空選項區 -->
-                <div class="options-container hidden" id="options-container">
-                    <!-- 選項按鈕由 JS 生成 -->
+                <!-- 選項與計時器區 -->
+                <div class="blanks-bottom-fixed hidden" id="options-container">
+                    <div class="options-row" id="options-buttons">
+                        <!-- 選項按鈕由 JS 生成 -->
+                    </div>
+                    <div class="timer-bar-container blanks-timer-container">
+                        <div class="timer-bar" id="blanks-timer"></div>
+                    </div>
                 </div>
             </div>
         </section>

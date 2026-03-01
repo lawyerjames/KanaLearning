@@ -342,9 +342,8 @@ header {
 
 .blanks-timer-container {
   position: relative;
-  top: 0;
-  width: 100%;
-  margin-top: 15px;
+  width: 80%;
+  max-width: 400px;
 }
 
 #blanks-message {
@@ -352,10 +351,12 @@ header {
   top: -10px;
 }
 
-/* 填空選項區 */
-.options-container {
+/* 填空選項與計時區 (固定於底部) */
+.blanks-bottom-fixed {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
   padding: 1rem;
   background-color: rgba(255, 255, 255, 0.95);
@@ -367,6 +368,12 @@ header {
   left: 0;
   width: 100%;
   z-index: 900;
+}
+
+.options-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .option-btn {

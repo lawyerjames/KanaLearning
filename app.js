@@ -8,7 +8,8 @@ const gameState = {
     score: 0,
     timeElapsed: 0, // 經過秒數
     timerInterval: null,
-    isPlaying: false
+    isPlaying: false,
+    isMuted: false // 新增靜音狀態
 };
 
 // DOM 元素快取
@@ -18,6 +19,7 @@ const ui = {
     displayScore: document.getElementById('display-score'),
     screens: document.querySelectorAll('.screen'),
     btnHome: document.getElementById('btn-home'),
+    btnVolume: document.getElementById('btn-volume'), // 新增音量切換按鈕
     menuBtns: document.querySelectorAll('.btn-menu'),
     diffBtns: document.querySelectorAll('.btn-diff'),
 
@@ -48,6 +50,7 @@ const ui = {
     areaBlanks: document.getElementById('game-area-blanks'),
     gojuonGrid: document.getElementById('gojuon-grid'),
     optionsContainer: document.getElementById('options-container'),
+    optionsButtons: document.getElementById('options-buttons'),
     diffSelector: document.getElementById('difficulty-selector'),
     blanksMessage: document.getElementById('blanks-message'),
     blanksTimerBar: document.getElementById('blanks-timer'),
@@ -128,12 +131,21 @@ function init() {
     ui.btnHome.addEventListener('click', () => {
         if (gameState.isPlaying) {
             if (confirm('是否要放棄比賽？')) {
-                showScreen('home');
+                abortGame();
             }
         } else {
             showScreen('home');
         }
     });
+
+    // 切換靜音
+    if (ui.btnVolume) {
+        ui.btnVolume.addEventListener('click', () => {
+            gameState.isMuted = !gameState.isMuted;
+            ui.btnVolume.textContent = gameState.isMuted ? '🔇' : '🔊';
+        });
+    }
+
     ui.btnBackHomeLb.addEventListener('click', () => showScreen('home'));
 
     // 彈窗「繼續」按鈕
@@ -250,7 +262,7 @@ function showScreen(screenName) {
     // 隱藏所有畫面
     ui.screens.forEach(s => s.classList.add('hidden'));
 
-    // 停止遊戲與計時器
+    // 停止主計時器
     stopTimer();
     gameState.isPlaying = false;
     if ('speechSynthesis' in window) {
@@ -365,6 +377,16 @@ function endGame() {
     ui.resultModal.classList.remove('hidden');
 }
 
+function abortGame() {
+    // 清除所有的專用計時器
+    if (typeof volleyData !== 'undefined' && volleyData.timer) clearInterval(volleyData.timer);
+    if (typeof kanaMatchState !== 'undefined' && kanaMatchState.timer) clearInterval(kanaMatchState.timer);
+    if (typeof blanksGameState !== 'undefined' && blanksGameState.timer) clearInterval(blanksGameState.timer);
+
+    // 回到主畫面
+    showScreen('home');
+}
+
 // --- 計時器與計分 ---
 
 function startTimer() {
@@ -406,6 +428,7 @@ function updateScoreDisplay() {
 // --- 單字展示彈窗與語音播放 ---
 
 function playAudio(text, lang = 'ja-JP') {
+    if (gameState.isMuted) return; // 靜音狀態不發音
     if ('speechSynthesis' in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = lang;
@@ -1170,12 +1193,12 @@ let blanksGameState = {
     currentActiveBlank: null,
     timer: null,
     timeLeft: 0,
-    maxTime: 4000
+    maxTime: 5000 // 改為 5 秒
 };
 
 function startFillBlanksGame(difficulty) {
     ui.gojuonGrid.innerHTML = '';
-    ui.optionsContainer.innerHTML = '';
+    if (ui.optionsButtons) ui.optionsButtons.innerHTML = '';
     ui.optionsContainer.classList.add('hidden');
     blanksGameState.hiddenItems = [];
     blanksGameState.currentActiveBlank = null;
@@ -1274,7 +1297,7 @@ function startFillBlanksGame(difficulty) {
 }
 
 function nextRandomBlank() {
-    ui.optionsContainer.innerHTML = '';
+    if (ui.optionsButtons) ui.optionsButtons.innerHTML = '';
     ui.optionsContainer.classList.add('hidden');
     clearInterval(blanksGameState.timer);
 
@@ -1318,7 +1341,7 @@ function nextRandomBlank() {
 }
 
 function generateBlanksOptions(targetItem) {
-    ui.optionsContainer.innerHTML = '';
+    if (ui.optionsButtons) ui.optionsButtons.innerHTML = '';
     ui.optionsContainer.classList.remove('hidden');
 
     const type = targetItem.type;
@@ -1346,7 +1369,7 @@ function generateBlanksOptions(targetItem) {
         btn.textContent = opt[type];
 
         btn.addEventListener('click', () => checkBlanksAnswer(opt[type], btn));
-        ui.optionsContainer.appendChild(btn);
+        if (ui.optionsButtons) ui.optionsButtons.appendChild(btn);
     });
 }
 
@@ -1374,8 +1397,10 @@ function updateBlanksTimer() {
 }
 
 function onBlanksTimeout() {
-    const btns = ui.optionsContainer.querySelectorAll('.option-btn');
-    btns.forEach(b => b.disabled = true);
+    if (ui.optionsButtons) {
+        const btns = ui.optionsButtons.querySelectorAll('.option-btn');
+        btns.forEach(b => b.disabled = true);
+    }
 
     addScore(-25);
     showBlanksMessage('時間到！扣 25 分', 'error');
@@ -1385,8 +1410,11 @@ function onBlanksTimeout() {
 
 function checkBlanksAnswer(selectedOpt, btnElement) {
     clearInterval(blanksGameState.timer);
-    const btns = ui.optionsContainer.querySelectorAll('.option-btn');
-    btns.forEach(b => b.disabled = true);
+
+    if (ui.optionsButtons) {
+        const btns = ui.optionsButtons.querySelectorAll('.option-btn');
+        btns.forEach(b => b.disabled = true);
+    }
 
     const targetItem = blanksGameState.currentActiveBlank;
     const correctAns = targetItem.kObj[targetItem.type];
