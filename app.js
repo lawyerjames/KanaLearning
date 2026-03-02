@@ -337,6 +337,8 @@ function showScreen(screenName) {
 // --- 遊戲狀態控制 ---
 
 function startGame(mode, difficulty = null) {
+    showScreen(mode);
+
     gameState.currentMode = mode;
     gameState.difficulty = difficulty;
     gameState.score = 0;
@@ -345,8 +347,6 @@ function startGame(mode, difficulty = null) {
 
     updateScoreDisplay();
     updateTimeDisplay();
-
-    showScreen(mode);
 
     if (mode === 'fill-blanks') {
         ui.diffSelector.classList.add('hidden');
