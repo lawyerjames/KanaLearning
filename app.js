@@ -69,6 +69,11 @@ const ui = {
     playerNameInput: document.getElementById('player-name'),
     btnSaveScore: document.getElementById('btn-save-score'),
 
+    // 中斷確認
+    abortModal: document.getElementById('abort-modal'),
+    btnAbortYes: document.getElementById('btn-abort-yes'),
+    btnAbortNo: document.getElementById('btn-abort-no'),
+
     // 擲硬幣
     coinModal: document.getElementById('coin-modal'),
     coinElement: document.getElementById('coin-element'),
@@ -130,13 +135,22 @@ function init() {
     // 回主畫面
     ui.btnHome.addEventListener('click', () => {
         if (gameState.isPlaying) {
-            if (confirm('是否要放棄比賽？')) {
-                abortGame();
-            }
+            ui.abortModal.classList.remove('hidden');
         } else {
             showScreen('home');
         }
     });
+
+    // 中斷確認彈窗處理
+    if (ui.abortModal) {
+        ui.btnAbortYes.addEventListener('click', () => {
+            ui.abortModal.classList.add('hidden');
+            abortGame();
+        });
+        ui.btnAbortNo.addEventListener('click', () => {
+            ui.abortModal.classList.add('hidden');
+        });
+    }
 
     // 切換靜音
     if (ui.btnVolume) {

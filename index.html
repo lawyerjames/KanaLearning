@@ -250,6 +250,18 @@
         </div>
     </div>
 
+    <!-- 中斷確認彈窗 -->
+    <div id="abort-modal" class="hidden">
+        <div class="result-card" style="text-align: center;">
+            <h2 style="color: var(--text-dark); margin-bottom: 0.5rem; font-size: 1.8rem;">⚠️ 確定要放棄嗎？</h2>
+            <p style="color: #666; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: 700;">目前的遊戲進度將不會保留喔！</p>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button class="btn btn-secondary" id="btn-abort-no">返回遊戲</button>
+                <button class="btn btn-primary" id="btn-abort-yes">確定放棄</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 擲硬幣彈窗 -->
     <div id="coin-modal" class="hidden">
         <div class="result-card coin-card">

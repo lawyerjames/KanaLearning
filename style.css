@@ -768,8 +768,22 @@ input[type="text"]:focus {
   z-index: 50;
 }
 
-#coin-modal.hidden {
+#coin-modal.hidden,
+#abort-modal.hidden {
   display: none !important;
+}
+
+#abort-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 100;
 }
 
 .coin-card {
