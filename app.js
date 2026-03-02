@@ -1508,22 +1508,35 @@ function saveScore() {
 }
 
 function renderLeaderboard(boardType) {
-    let boardKey = '';
+    let scores = [];
     let titleAddon = '';
 
     if (boardType === 'blanks') {
-        // 預設顯示中等難度的排行榜，或合併顯示。為求簡單，這裡先顯示中等
-        // TODO: 應該在畫面上增加難度切換，這裡作為示範先寫死 'medium' 或合併。
-        // 目前先直接以 key 為 kanagame_fill-blanks_medium 示範
-        boardKey = `kanagame_fill-blanks_medium`;
-        titleAddon = ' (中等難度)';
+        titleAddon = ' (所有難度)';
+        const diffs = [
+            { key: 'easy', label: '簡單' },
+            { key: 'medium', label: '中等' },
+            { key: 'hard', label: '挑戰' }
+        ];
+        diffs.forEach(d => {
+            const arr = JSON.parse(localStorage.getItem(`kanagame_fill-blanks_${d.key}`)) || [];
+            arr.forEach(s => {
+                scores.push({ ...s, name: `${s.name} [${d.label}]` });
+            });
+        });
+
+        scores.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.time - b.time;
+        });
+        scores = scores.slice(0, 10);
+
     } else if (boardType === 'sound') {
-        boardKey = `kanagame_match-sound`;
+        scores = JSON.parse(localStorage.getItem(`kanagame_match-sound`)) || [];
     } else if (boardType === 'kana') {
-        boardKey = `kanagame_match-kana`;
+        scores = JSON.parse(localStorage.getItem(`kanagame_match-kana`)) || [];
     }
 
-    const scores = JSON.parse(localStorage.getItem(boardKey)) || [];
     ui.leaderboardList.innerHTML = '';
 
     if (scores.length === 0) {
